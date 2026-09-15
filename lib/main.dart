@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'design_system.dart';
 
 void main() => runApp(const MoodLedgerApp());
 
@@ -18,7 +19,7 @@ class MoodEntry { const MoodEntry({required this.mood, required this.energy, req
 class MoodLedgerApp extends StatelessWidget {
   const MoodLedgerApp({super.key});
   @override
-  Widget build(BuildContext context) => MaterialApp(title: 'MoodLedger', theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo), useMaterial3: true), home: const DashboardPage());
+  Widget build(BuildContext context) => MaterialApp(title: 'MoodLedger', theme: MoodLedgerTheme.data(), home: const DashboardPage());
 }
 
 class DashboardPage extends StatefulWidget {
@@ -64,4 +65,4 @@ class _SpendingDialogState extends State<SpendingDialog> {
   @override Widget build(BuildContext context) => AlertDialog(title: const Text('Registrar compra'), content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [TextField(controller: amount, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Valor (R\$)')), DropdownButtonFormField<String>(initialValue: category, items: ['Alimentação', 'Lazer', 'Casa', 'Transporte', 'Outro'].map((x) => DropdownMenuItem(value: x, child: Text(x))).toList(), onChanged: (x) => setState(() => category = x!)), TextField(controller: motive, decoration: const InputDecoration(labelText: 'Motivo da compra')), SwitchListTile(title: const Text('Foi impulsiva?'), value: impulsive, onChanged: (x) => setState(() => impulsive = x))])), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')), FilledButton(onPressed: () { final v = double.tryParse(amount.text.replaceAll(',', '.')); if (v != null && v > 0 && motive.text.trim().isNotEmpty) Navigator.pop(context, SpendingEntry(date: DateTime.now(), amount: v, category: category, motive: motive.text.trim(), impulsive: impulsive)); }, child: const Text('Salvar'))]);
 }
 class MoodDialog extends StatefulWidget { const MoodDialog({super.key}); @override State<MoodDialog> createState() => _MoodDialogState(); }
-class _MoodDialogState extends State<MoodDialog> { double mood = 5, energy = 5; final sleep = TextEditingController(text: '7'); @override Widget build(BuildContext c) => AlertDialog(title: const Text('Registrar estado mental'), content: Column(mainAxisSize: MainAxisSize.min, children: [Text('Humor: ${mood.round()}/10'), Slider(value: mood, min: 0, max: 10, divisions: 10, onChanged: (v) => setState(() => mood = v)), Text('Energia: ${energy.round()}/10'), Slider(value: energy, min: 0, max: 10, divisions: 10, onChanged: (v) => setState(() => energy = v)), TextField(controller: sleep, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Horas de sono'))]), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancelar')), FilledButton(onPressed: () { final h = int.tryParse(sleep.text); if (h != null && h <= 24) Navigator.pop(c, MoodEntry(mood: mood.round(), energy: energy.round(), sleep: h)); }, child: const Text('Salvar'))]); }
+class _MoodDialogState extends State<MoodDialog> { double mood = 5, energy = 5; final sleep = TextEditingController(text: '7'); @override Widget build(BuildContext c) => AlertDialog(title: const Text('Registrar estado mental'), content: Column(mainAxisSize: MainAxisSize.min, children: [MoodScaleTile(label: 'Humor', value: mood, onChanged: (v) => setState(() => mood = v)), const SizedBox(height: 8), MoodScaleTile(label: 'Energia', value: energy, onChanged: (v) => setState(() => energy = v)), TextField(controller: sleep, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Horas de sono'))]), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancelar')), FilledButton(onPressed: () { final h = int.tryParse(sleep.text); if (h != null && h <= 24) Navigator.pop(c, MoodEntry(mood: mood.round(), energy: energy.round(), sleep: h)); }, child: const Text('Salvar'))]); }
