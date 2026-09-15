@@ -1,0 +1,17 @@
+name: Feature
+description: Requisito rastreável do MoodLedger
+title: "feat: "
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo e evidência
+      description: Descreva o valor, requisito relacionado e referência.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceitação
+    validations:
+      required: true
