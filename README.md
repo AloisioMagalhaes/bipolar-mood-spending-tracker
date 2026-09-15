@@ -1,4 +1,24 @@
-# moodledger
+# MoodLedger
+
+Aplicativo Flutter Web/Android para registro consentido e revisão longitudinal de gastos e estado mental em pessoas com transtorno bipolar. É uma ferramenta de apoio à decisão clínica, não um instrumento diagnóstico.
+
+## Estado
+
+Baseline Flutter criada. Requisitos e arquitetura: [docs/01-TRS.md](docs/01-TRS.md). Diagramas C4: [docs/diagrams/c4](docs/diagrams/c4). Limitações de ferramentas: [docs/tooling-limitations.md](docs/tooling-limitations.md).
+
+## Desenvolvimento
+
+```bash
+flutter pub get
+flutter analyze
+flutter test
+flutter run -d chrome
+flutter run -d <android-device>
+```
+
+## Segurança
+
+Não use dados clínicos reais neste estágio. Consulte [SECURITY.md](SECURITY.md) antes de configurar backend, autenticação ou dados de estudo.
 
 A new Flutter project.
 
