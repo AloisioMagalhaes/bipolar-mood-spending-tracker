@@ -27,6 +27,7 @@ Decisões de requisitos, limites clínicos, métricas e referências: [docs/01-T
 - [Protocolo de validação](docs/research-validation.md): síntese acadêmica e métricas sem alegação de eficácia.
 - [Protocolo operacional de estudo](docs/research-study-protocol.md): desenho, métricas e gates éticos.
 - [Plano de dados e análise](docs/research-data-analysis.md): variáveis, missingness e métricas pré-especificadas.
+- [Checklist ético e LGPD](docs/research-ethics-checklist.md): gates antes de qualquer coleta.
 
 ## Qualidade e entrega
 
