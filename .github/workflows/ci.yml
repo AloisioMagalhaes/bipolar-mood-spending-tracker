@@ -34,9 +34,10 @@ jobs:
           scan-args: |-
             --lockfile=pubspec.lock
             --lockfile=android/gradle.lockfile
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Scan repository for secrets
+        uses: docker://zricethezav/gitleaks:latest
+        with:
+          args: detect --source . --no-banner --redact
   android-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [verify, dependency-audit]
