@@ -56,6 +56,14 @@ class MoodEntry {
     'impulsivity': impulsivity,
     'medicationTaken': medicationTaken,
   };
+  factory MoodEntry.fromJson(Map<String, dynamic> json) => MoodEntry(
+    mood: (json['mood'] as num).toInt(),
+    energy: (json['energy'] as num).toInt(),
+    sleep: (json['sleep'] as num).toInt(),
+    irritability: (json['irritability'] as num?)?.toInt() ?? 0,
+    impulsivity: (json['impulsivity'] as num?)?.toInt() ?? 0,
+    medicationTaken: json['medicationTaken'] as bool? ?? false,
+  );
 }
 
 class AuditEvent {
@@ -125,16 +133,36 @@ class _DashboardPageState extends State<DashboardPage> {
           );
         } catch (_) {}
       }
-      if (mounted)
+      if (mounted) {
         setState(() {
           for (final key in consent.keys) {
             consent[key] = prefs.getBool('consent_$key') ?? consent[key]!;
           }
-          if (loaded.isNotEmpty)
+          if (loaded.isNotEmpty) {
             spending
               ..clear()
               ..addAll(loaded);
+          }
+          final moodRaw = prefs.getStringList('mood_entries') ?? [];
+          final loadedMoods = moodRaw
+              .map((value) {
+                try {
+                  return MoodEntry.fromJson(
+                    jsonDecode(value) as Map<String, dynamic>,
+                  );
+                } catch (_) {
+                  return null;
+                }
+              })
+              .whereType<MoodEntry>()
+              .toList();
+          if (loadedMoods.isNotEmpty) {
+            moods
+              ..clear()
+              ..addAll(loadedMoods);
+          }
         });
+      }
     } finally {
       if (!_stateReady.isCompleted) _stateReady.complete();
     }
@@ -159,21 +187,49 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  Future<bool> _saveMoods() async {
+    if (kIsWeb) return false;
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setStringList(
+      'mood_entries',
+      moods.map((entry) => jsonEncode(entry.toJson())).toList(),
+    );
+  }
+
+  List<String> get _reviewSignals => reviewSignalEnabled
+      ? [
+          if (moods.first.irritability >= 7)
+            'Irritabilidade autorrelatada elevada para revisão',
+          if (moods.first.impulsivity >= 7)
+            'Impulsividade autorrelatada elevada para revisão',
+          if (moods.first.sleep <= 4)
+            'Sono autorrelatado reduzido para revisão',
+        ]
+      : const [];
+
   Future<void> _exportData() async {
     if (!consent['export']!) {
       _notice('Ative o consentimento de exportação antes de continuar.');
       return;
     }
-    _recordAudit('export');
     final payload = const JsonEncoder.withIndent('  ').convert({
       'schemaVersion': 2,
       'exportedAt': DateTime.now().toIso8601String(),
       'spending': spending.map((e) => e.toJson()).toList(),
       'mood': moods.map((e) => e.toJson()).toList(),
       'audit': audit.map((e) => e.toJson()).toList(),
+      'reviewSignals': _reviewSignals,
     });
-    await Clipboard.setData(ClipboardData(text: payload));
-    if (mounted) _notice('Dados copiados. Cole em um arquivo seguro.');
+    try {
+      await Clipboard.setData(ClipboardData(text: payload));
+    } catch (_) {
+      if (mounted) _notice('Não foi possível copiar os dados.');
+      return;
+    }
+    if (mounted) {
+      _recordAudit('export');
+      _notice('Dados copiados. Cole em um arquivo seguro.');
+    }
   }
 
   void _recordAudit(String operation) => setState(
@@ -280,6 +336,10 @@ class _DashboardPageState extends State<DashboardPage> {
     if (entry != null) {
       setState(() => moods.insert(0, entry));
       _recordAudit('mood_entry_created');
+      final saved = await _saveMoods();
+      if (!saved && !kIsWeb && mounted) {
+        _notice('Não foi possível persistir o autorrelato.');
+      }
     }
   }
 
@@ -402,6 +462,14 @@ class _DashboardPageState extends State<DashboardPage> {
               color: Colors.deepOrange.shade700,
               animate: !reduceMotion,
             ),
+            if (_reviewSignals.isNotEmpty)
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.flag_outlined),
+                  title: const Text('Pontos para revisão'),
+                  subtitle: Text(_reviewSignals.join(' · ')),
+                ),
+              ),
             const SizedBox(height: 20),
             Card(
               child: Column(
@@ -577,7 +645,7 @@ class _SpendingDialogState extends State<SpendingDialog> {
       FilledButton(
         onPressed: () {
           final v = double.tryParse(amount.text.replaceAll(',', '.'));
-          if (v != null && v > 0 && motive.text.trim().isNotEmpty)
+          if (v != null && v > 0 && motive.text.trim().isNotEmpty) {
             Navigator.pop(
               context,
               SpendingEntry(
@@ -588,6 +656,7 @@ class _SpendingDialogState extends State<SpendingDialog> {
                 impulsive: impulsive,
               ),
             );
+          }
         },
         child: const Text('Salvar'),
       ),
@@ -654,7 +723,7 @@ class _MoodDialogState extends State<MoodDialog> {
       FilledButton(
         onPressed: () {
           final h = int.tryParse(sleep.text);
-          if (h != null && h >= 0 && h <= 24)
+          if (h != null && h >= 0 && h <= 24) {
             Navigator.pop(
               c,
               MoodEntry(
@@ -666,6 +735,7 @@ class _MoodDialogState extends State<MoodDialog> {
                 medicationTaken: medicationTaken,
               ),
             );
+          }
         },
         child: const Text('Salvar'),
       ),

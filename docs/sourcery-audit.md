@@ -43,3 +43,18 @@ GITHUB. *GitHub CLI manual: gh pr view*. [S. l.], 2026. Disponível em:
 
 SOURCERY AI. *Sourcery documentation*. [S. l.], 2026. Disponível em:
 <https://docs.sourcery.ai/>. Acesso em: 15 set. 2026.
+# Auditoria Sourcery — PR #60
+
+Os três achados bloqueadores do review de `sourcery-ai` foram tratados na
+mesma branch antes da promoção:
+
+| Achado | Trigger | Correção | Evidência |
+|---|---|---|---|
+| Toggle sem sinal produzido | ativar “Sinal para revisão” | sinais informativos derivados de autorrelatos são exibidos e exportados, sem diagnóstico | `flutter test`, `flutter analyze` |
+| Auditoria antes de clipboard | falha em `Clipboard.setData` | cópia protegida por `try/catch`; evento de sucesso é registrado somente após cópia | teste de exportação e análise local |
+| Autorrelatos somente em memória | reiniciar o aplicativo | `MoodEntry.fromJson`, chave local `mood_entries` e persistência após registro | teste de serialização e análise local |
+
+O review também foi usado para identificar a falha P0 do workflow: os avisos
+de estilo do `flutter analyze` faziam o comando terminar com código 1. Os três
+avisos foram corrigidos com blocos explícitos. O sinal permanece um recurso de
+organização para revisão; não classifica fases bipolares nem emite urgência.
