@@ -45,9 +45,11 @@ class MoodEntry {
     this.irritability = 0,
     this.impulsivity = 0,
     this.medicationTaken = false,
+    this.missingReason,
   });
   final int mood, energy, sleep, irritability, impulsivity;
   final bool medicationTaken;
+  final String? missingReason;
   Map<String, dynamic> toJson() => {
     'mood': mood,
     'energy': energy,
@@ -55,6 +57,7 @@ class MoodEntry {
     'irritability': irritability,
     'impulsivity': impulsivity,
     'medicationTaken': medicationTaken,
+    if (missingReason != null) 'missingReason': missingReason,
   };
   factory MoodEntry.fromJson(Map<String, dynamic> json) => MoodEntry(
     mood: (json['mood'] as num).toInt(),
@@ -63,6 +66,7 @@ class MoodEntry {
     irritability: (json['irritability'] as num?)?.toInt() ?? 0,
     impulsivity: (json['impulsivity'] as num?)?.toInt() ?? 0,
     medicationTaken: json['medicationTaken'] as bool? ?? false,
+    missingReason: json['missingReason'] as String?,
   );
 }
 
@@ -161,6 +165,22 @@ class _DashboardPageState extends State<DashboardPage> {
               ..clear()
               ..addAll(loadedMoods);
           }
+          final auditRaw = prefs.getStringList('audit_events') ?? [];
+          audit
+            ..clear()
+            ..addAll(
+              auditRaw.map((value) {
+                try {
+                  final json = jsonDecode(value) as Map<String, dynamic>;
+                  return AuditEvent(
+                    operation: json['operation'] as String,
+                    at: DateTime.parse(json['at'] as String),
+                  );
+                } catch (_) {
+                  return null;
+                }
+              }).whereType<AuditEvent>(),
+            );
         });
       }
     } finally {
@@ -193,6 +213,15 @@ class _DashboardPageState extends State<DashboardPage> {
     return prefs.setStringList(
       'mood_entries',
       moods.map((entry) => jsonEncode(entry.toJson())).toList(),
+    );
+  }
+
+  Future<void> _saveAudit() async {
+    if (kIsWeb) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      'audit_events',
+      audit.map((event) => jsonEncode(event.toJson())).toList(),
     );
   }
 
@@ -232,9 +261,13 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  void _recordAudit(String operation) => setState(
-    () => audit.add(AuditEvent(operation: operation, at: DateTime.now())),
-  );
+  void _recordAudit(String operation) {
+    setState(
+      () => audit.add(AuditEvent(operation: operation, at: DateTime.now())),
+    );
+    _saveAudit();
+  }
+
   void _notice(String text) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   Future<void> _eraseLocalData() async {
@@ -263,6 +296,8 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!kIsWeb) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('spending_entries');
+      await prefs.remove('mood_entries');
+      await prefs.remove('audit_events');
       for (final key in consent.keys) {
         await prefs.remove('consent_$key');
       }
@@ -393,6 +428,13 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             const Text(
               'Registre o contexto. Os padrões são informativos e devem ser revisados com seu profissional.',
+            ),
+            const ListTile(
+              leading: Icon(Icons.cloud_off),
+              title: Text('Armazenamento local'),
+              subtitle: Text(
+                'Os registros permanecem neste dispositivo até existir sincronização autorizada.',
+              ),
             ),
             const SizedBox(height: 24),
             Wrap(
@@ -705,7 +747,9 @@ class _MoodDialogState extends State<MoodDialog> {
           TextField(
             controller: sleep,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Horas de sono'),
+            decoration: const InputDecoration(
+              labelText: 'Horas de sono (0 = não informado)',
+            ),
           ),
           CheckboxListTile(
             value: medicationTaken,
@@ -733,6 +777,7 @@ class _MoodDialogState extends State<MoodDialog> {
                 irritability: irritability.round(),
                 impulsivity: impulsivity.round(),
                 medicationTaken: medicationTaken,
+                missingReason: h == 0 ? 'Não informado' : null,
               ),
             );
           }
