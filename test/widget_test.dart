@@ -4,6 +4,7 @@ import 'package:moodledger/main.dart';
 void main() {
   testWidgets('dashboard acessível e visualização reduzida', (tester) async {
     await tester.pumpWidget(const MoodLedgerApp());
+    await tester.pumpAndSettle();
     expect(find.text('Resumo visual'), findsOneWidget);
     expect(find.text('Humor autorrelatado'), findsOneWidget);
     final toggle = find.text('Reduzir animações');
