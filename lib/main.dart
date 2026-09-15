@@ -55,7 +55,7 @@ class _DashboardPageState extends State<DashboardPage> {
       const SizedBox(height: 20), Card(child: SwitchListTile(title: const Text('Reduzir animações'), subtitle: const Text('Mantém informação e remove movimento decorativo'), value: reduceMotion, onChanged: (v) => setState(() => reduceMotion = v))),
       const SizedBox(height: 8), Text('Resumo visual', style: Theme.of(context).textTheme.titleLarge),
       TrendBar(label: 'Humor autorrelatado', value: moods.first.mood / 10, color: Colors.indigo, animate: !reduceMotion),
-      TrendBar(label: 'Energia autorrelatada', value: moods.first.energy / 10, color: Colors.orange, animate: !reduceMotion),
+      TrendBar(label: 'Energia autorrelatada', value: moods.first.energy / 10, color: Colors.deepOrange.shade700, animate: !reduceMotion),
       const SizedBox(height: 20), Card(child: SwitchListTile(title: const Text('Compartilhamento consentido'), subtitle: Text(consentActive ? 'Ativo para revisão profissional' : 'Desativado'), value: consentActive, onChanged: _setConsent)),
       if (professionalLink != null) Card(child: ListTile(leading: const Icon(Icons.verified_user), title: const Text('Profissional vinculado'), subtitle: Text('Código ${professionalLink!.code} · acesso autorizado'), trailing: TextButton(onPressed: () => setState(() => professionalLink = null), child: const Text('Revogar')))),
       const SizedBox(height: 8), Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
