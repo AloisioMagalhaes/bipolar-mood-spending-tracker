@@ -1,0 +1,6 @@
+source_doi,target_doi,relation,confidence,notes
+10.2196/13770,10.2196/jmir.4581,mentioning,exploratory,Scite graph seed relation
+10.1186/s40345-025-00407-5,10.2196/13770,mentioning,exploratory,low coverage seed
+10.1111/bdi.13243,10.2196/13770,synthesis,exploratory,review/meta-analysis relation
+10.1111/bdi.13243,10.2196/jmir.4581,synthesis,exploratory,review relation
+10.2196/18818,10.1111/bdi.13243,protocol-context,exploratory,feasibility context
