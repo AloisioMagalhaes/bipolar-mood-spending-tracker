@@ -21,6 +21,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final moods = <MoodEntry>[const MoodEntry(mood: 6, energy: 7, sleep: 7)];
+  bool consentActive = true;
   final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
   Future<void> addSpending() async { final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) setState(() => spending.insert(0, entry)); }
   Future<void> addMood() async { final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
@@ -33,7 +34,10 @@ class _DashboardPageState extends State<DashboardPage> {
       const Text('Registre o contexto. Os padrões são informativos e devem ser revisados com seu profissional.'),
       const SizedBox(height: 24),
       Wrap(spacing: 16, runSpacing: 16, children: [MetricCard(label: 'Humor recente', value: '${moods.first.mood}/10', icon: Icons.mood), MetricCard(label: 'Energia recente', value: '${moods.first.energy}/10', icon: Icons.bolt), MetricCard(label: 'Sono recente', value: '${moods.first.sleep}h', icon: Icons.bedtime), MetricCard(label: 'Gastos registrados', value: 'R\$ ${spending.fold<double>(0, (s, e) => s + e.amount).toStringAsFixed(2)}', icon: Icons.payments)]),
-      const SizedBox(height: 28), Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
+      const SizedBox(height: 20), Card(child: SwitchListTile(title: const Text('Compartilhamento consentido'), subtitle: Text(consentActive ? 'Ativo para revisão profissional' : 'Desativado'), value: consentActive, onChanged: (v) => setState(() => consentActive = v))),
+      const SizedBox(height: 8), Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
+      const Text('Eventos próximos no tempo não provam causalidade.'),
+      Card(child: ListTile(leading: const CircleAvatar(child: Icon(Icons.mood)), title: Text('Humor ${moods.first.mood}/10 · energia ${moods.first.energy}/10'), subtitle: Text('Sono: ${moods.first.sleep}h · autorrelato'), trailing: const Text('hoje'))),
       ...spending.map((e) => Card(child: ListTile(leading: CircleAvatar(child: Icon(e.impulsive ? Icons.flash_on : Icons.receipt_long)), title: Text('${e.category} · R\$ ${e.amount.toStringAsFixed(2)}'), subtitle: Text('${e.motive}${e.impulsive ? ' · marcada como impulsiva' : ''}'), trailing: Text('${e.date.day}/${e.date.month}')))),
     ]))),
   );
