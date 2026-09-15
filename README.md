@@ -29,6 +29,7 @@ Decisões de requisitos, limites clínicos, métricas e referências: [docs/01-T
 - [Plano de dados e análise](docs/research-data-analysis.md): variáveis, missingness e métricas pré-especificadas.
 - [Checklist ético e LGPD](docs/research-ethics-checklist.md): gates antes de qualquer coleta.
 - [Triagem e grafo bibliográfico](docs/literature-screening.md): formatos CSV, BibTeX, RIS e Mermaid em `references/`.
+- [Matriz de evidência](docs/evidence-matrix.md): avaliação crítica e rastreabilidade afirmação→fonte→decisão.
 
 ## Qualidade e entrega
 
