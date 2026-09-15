@@ -25,6 +25,7 @@ Decisões de requisitos, limites clínicos, métricas e referências: [docs/01-T
 - [Threat model e Zero Trust](docs/threat-model.md): ativos, STRIDE, fronteiras e controles futuros.
 - [Matriz de autorização](docs/authorization-matrix.md): papéis e acesso futuro por recurso.
 - [Protocolo de validação](docs/research-validation.md): síntese acadêmica e métricas sem alegação de eficácia.
+- [Protocolo operacional de estudo](docs/research-study-protocol.md): desenho, métricas e gates éticos.
 
 ## Qualidade e entrega
 
