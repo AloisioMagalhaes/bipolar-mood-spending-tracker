@@ -30,22 +30,31 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final moods = <MoodEntry>[const MoodEntry(mood: 6, energy: 7, sleep: 7)];
-  bool consentActive = true;
+  final consent = <String, bool>{'mood': true, 'spending': true, 'link': false, 'export': false};
   ProfessionalLink? professionalLink;
   bool reduceMotion = false;
   final _stateReady = Completer<void>();
   @override void initState() { super.initState(); _loadState(); }
-  Future<void> _loadState() async { try { if (kIsWeb) { _stateReady.complete(); return; } final prefs = await SharedPreferences.getInstance(); final raw = prefs.getStringList('spending_entries') ?? []; final loaded = <SpendingEntry>[]; for (final value in raw) { try { loaded.add(SpendingEntry.fromJson(jsonDecode(value) as Map<String, dynamic>)); } catch (_) {} } if (mounted) setState(() { consentActive = prefs.getBool('consent_active') ?? true; if (loaded.isNotEmpty) spending..clear()..addAll(loaded); }); } finally { if (!_stateReady.isCompleted) _stateReady.complete(); } }
-  Future<void> _setConsent(bool value) async { final prefs = await SharedPreferences.getInstance(); await prefs.setBool('consent_active', value); if (mounted) setState(() => consentActive = value); }
+  Future<void> _loadState() async { try { if (kIsWeb) { _stateReady.complete(); return; } final prefs = await SharedPreferences.getInstance(); final raw = prefs.getStringList('spending_entries') ?? []; final loaded = <SpendingEntry>[]; for (final value in raw) { try { loaded.add(SpendingEntry.fromJson(jsonDecode(value) as Map<String, dynamic>)); } catch (_) {} } if (mounted) setState(() { for (final key in consent.keys) { consent[key] = prefs.getBool('consent_$key') ?? consent[key]!; } if (loaded.isNotEmpty) spending..clear()..addAll(loaded); }); } finally { if (!_stateReady.isCompleted) _stateReady.complete(); } }
+  Future<void> _setConsent(String key, bool value) async { if (kIsWeb) { setState(() => consent[key] = value); return; } final prefs = await SharedPreferences.getInstance(); await prefs.setBool('consent_$key', value); if (mounted) setState(() => consent[key] = value); }
   Future<bool> _saveSpending() async { if (kIsWeb) return false; final prefs = await SharedPreferences.getInstance(); return prefs.setStringList('spending_entries', spending.map((e) => jsonEncode(e.toJson())).toList()); }
-  Future<void> _exportData() async { final payload = const JsonEncoder.withIndent('  ').convert({'schemaVersion': 1, 'exportedAt': DateTime.now().toIso8601String(), 'spending': spending.map((e) => e.toJson()).toList(), 'mood': moods.map((e) => e.toJson()).toList()}); await Clipboard.setData(ClipboardData(text: payload)); if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Dados copiados. Cole em um arquivo seguro.'))); }
-  Future<void> _linkProfessional() async { final code = await showDialog<String>(context: context, builder: (_) => const LinkDialog()); if (code != null && mounted) setState(() => professionalLink = ProfessionalLink(code: code, active: true)); }
+  Future<void> _exportData() async { if (!consent['export']!) { _notice('Ative o consentimento de exportação antes de continuar.'); return; } final payload = const JsonEncoder.withIndent('  ').convert({'schemaVersion': 1, 'exportedAt': DateTime.now().toIso8601String(), 'spending': spending.map((e) => e.toJson()).toList(), 'mood': moods.map((e) => e.toJson()).toList()}); await Clipboard.setData(ClipboardData(text: payload)); if (mounted) _notice('Dados copiados. Cole em um arquivo seguro.'); }
+  void _notice(String text) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  Future<void> _eraseLocalData() async {
+    final confirmed = await showDialog<bool>(context: context, builder: (c) => AlertDialog(title: const Text('Excluir dados locais?'), content: const Text('Esta ação remove gastos, autorrelatos, consentimentos e vínculo deste dispositivo.'), actions: [TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancelar')), FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Excluir'))])) ?? false;
+    if (!confirmed) return;
+    if (!kIsWeb) { final prefs = await SharedPreferences.getInstance(); await prefs.remove('spending_entries'); for (final key in consent.keys) { await prefs.remove('consent_$key'); } }
+    if (!mounted) return;
+    setState(() { spending.clear(); moods.clear(); professionalLink = null; for (final key in consent.keys) { consent[key] = false; } });
+    _notice('Dados locais excluídos.');
+  }
+  Future<void> _linkProfessional() async { if (!consent['link']!) { _notice('Ative o consentimento de vínculo antes de continuar.'); return; } final code = await showDialog<String>(context: context, builder: (_) => const LinkDialog()); if (code != null && mounted) setState(() => professionalLink = ProfessionalLink(code: code, active: true)); }
   final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
-  Future<void> addSpending() async { await _stateReady.future; if (!mounted) return; final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); final saved = await _saveSpending(); if (!mounted) return; if (!saved && !kIsWeb) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Não foi possível persistir o registro.'))); } }
-  Future<void> addMood() async { final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
+  Future<void> addSpending() async { await _stateReady.future; if (!mounted || !consent['spending']!) { _notice('Ative o consentimento de gastos antes de registrar.'); return; } final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); final saved = await _saveSpending(); if (!mounted) return; if (!saved && !kIsWeb) _notice('Não foi possível persistir o registro.'); } }
+  Future<void> addMood() async { if (!consent['mood']!) { _notice('Ative o consentimento de autorrelato antes de registrar.'); return; } final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: _linkProfessional, tooltip: 'Vincular profissional', icon: const Icon(Icons.people_outline)), IconButton(onPressed: _exportData, tooltip: 'Exportar dados', icon: const Icon(Icons.download)), IconButton(onPressed: () {}, tooltip: 'Privacidade', icon: const Icon(Icons.lock_outline))]),
+    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: _linkProfessional, tooltip: 'Vincular profissional', icon: const Icon(Icons.people_outline)), IconButton(onPressed: _exportData, tooltip: 'Exportar dados', icon: const Icon(Icons.download)), IconButton(onPressed: _eraseLocalData, tooltip: 'Excluir dados locais', icon: const Icon(Icons.delete_outline))]),
     floatingActionButton: Column(mainAxisSize: MainAxisSize.min, children: [FloatingActionButton.extended(onPressed: addMood, icon: const Icon(Icons.mood), label: const Text('Registrar humor')), const SizedBox(height: 12), FloatingActionButton.extended(onPressed: addSpending, icon: const Icon(Icons.add), label: const Text('Registrar compra'))]),
     body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1000), child: ListView(padding: const EdgeInsets.all(24), children: [
       Text('Seu acompanhamento', style: Theme.of(context).textTheme.headlineMedium),
@@ -56,7 +65,7 @@ class _DashboardPageState extends State<DashboardPage> {
       const SizedBox(height: 8), Text('Resumo visual', style: Theme.of(context).textTheme.titleLarge),
       TrendBar(label: 'Humor autorrelatado', value: moods.first.mood / 10, color: Colors.indigo, animate: !reduceMotion),
       TrendBar(label: 'Energia autorrelatada', value: moods.first.energy / 10, color: Colors.deepOrange.shade700, animate: !reduceMotion),
-      const SizedBox(height: 20), Card(child: SwitchListTile(title: const Text('Compartilhamento consentido'), subtitle: Text(consentActive ? 'Ativo para revisão profissional' : 'Desativado'), value: consentActive, onChanged: _setConsent)),
+      const SizedBox(height: 20), Card(child: Column(children: [const ListTile(title: Text('Consentimentos'), subtitle: Text('Cada finalidade pode ser revogada separadamente.')), ...{'mood': 'Autorrelatos', 'spending': 'Gastos', 'link': 'Vínculo profissional', 'export': 'Exportação JSON'}.entries.map((e) => SwitchListTile(title: Text(e.value), value: consent[e.key]!, onChanged: (v) => _setConsent(e.key, v)))])),
       if (professionalLink != null) Card(child: ListTile(leading: const Icon(Icons.verified_user), title: const Text('Profissional vinculado'), subtitle: Text('Código ${professionalLink!.code} · acesso autorizado'), trailing: TextButton(onPressed: () => setState(() => professionalLink = null), child: const Text('Revogar')))),
       const SizedBox(height: 8), Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
       const Text('Eventos próximos no tempo não provam causalidade.'),
