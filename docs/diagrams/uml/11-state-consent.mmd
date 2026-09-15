@@ -1,6 +1,9 @@
 stateDiagram-v2
 [*] --> NotGranted
 NotGranted --> Active: aceitar escopo
-Active --> Revoked: revogar
+Active --> Revoked: revogar escopo
 Revoked --> Active: novo aceite
 Active --> [*]
+state "Cada escopo independente" as Scoped
+Active --> Scoped
+Scoped --> Revoked: revogar somente uma finalidade

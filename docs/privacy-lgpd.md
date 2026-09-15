@@ -1,6 +1,6 @@
 # Governança de privacidade e LGPD — etapa 2
 
-Status: requisitos de governança para o protótipo; não autoriza uso clínico.
+Status: requisitos de governança e consentimento granular implementados no protótipo; não autoriza uso clínico.
 
 ## Classificação e minimização
 
