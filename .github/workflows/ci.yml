@@ -1,21 +1,54 @@
-name: CI
+name: Quality, security and builds
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
+permissions:
+  contents: read
+  security-events: write
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
+        with: {channel: stable}
       - run: flutter pub get
       - run: flutter analyze
-      - run: flutter test
+      - run: flutter test --coverage
       - run: flutter build web --release
+      - run: flutter build apk --debug
       - uses: actions/upload-artifact@v4
         with:
-          name: flutter-web
-          path: build/web
+          name: flutter-artifacts
+          path: |
+            build/web
+            build/app/outputs/flutter-apk/app-debug.apk
+            coverage/lcov.info
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google/osv-scanner-action/osv-scanner-action@v2.0.2
+        with:
+          scan-args: |-
+            --lockfile=pubspec.lock
+            --lockfile=android/gradle.lockfile
+      - name: Scan repository for secrets
+        uses: docker://zricethezav/gitleaks:latest
+        with:
+          args: detect --source . --no-banner --redact
+  android-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [verify, dependency-audit]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: {channel: stable}
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moodledger-android-release
+          path: build/app/outputs/flutter-apk/app-release.apk
