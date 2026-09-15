@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'design_system.dart';
 
@@ -7,8 +11,10 @@ void main() => runApp(const MoodLedgerApp());
 class SpendingEntry {
   const SpendingEntry({required this.date, required this.amount, required this.category, required this.motive, required this.impulsive});
   final DateTime date; final double amount; final String category; final String motive; final bool impulsive;
+  Map<String, dynamic> toJson() => {'date': date.toIso8601String(), 'amount': amount, 'category': category, 'motive': motive, 'impulsive': impulsive};
+  factory SpendingEntry.fromJson(Map<String, dynamic> j) => SpendingEntry(date: DateTime.parse(j['date'] as String), amount: (j['amount'] as num).toDouble(), category: j['category'] as String, motive: j['motive'] as String, impulsive: j['impulsive'] as bool);
 }
-class MoodEntry { const MoodEntry({required this.mood, required this.energy, required this.sleep}); final int mood, energy, sleep; }
+class MoodEntry { const MoodEntry({required this.mood, required this.energy, required this.sleep}); final int mood, energy, sleep; Map<String, dynamic> toJson() => {'mood': mood, 'energy': energy, 'sleep': sleep}; }
 
 class MoodLedgerApp extends StatelessWidget {
   const MoodLedgerApp({super.key});
@@ -24,15 +30,18 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final moods = <MoodEntry>[const MoodEntry(mood: 6, energy: 7, sleep: 7)];
   bool consentActive = true;
-  @override void initState() { super.initState(); _loadConsent(); }
-  Future<void> _loadConsent() async { final prefs = await SharedPreferences.getInstance(); if (mounted) setState(() => consentActive = prefs.getBool('consent_active') ?? true); }
+  final _stateReady = Completer<void>();
+  @override void initState() { super.initState(); _loadState(); }
+  Future<void> _loadState() async { try { if (kIsWeb) { _stateReady.complete(); return; } final prefs = await SharedPreferences.getInstance(); final raw = prefs.getStringList('spending_entries') ?? []; final loaded = <SpendingEntry>[]; for (final value in raw) { try { loaded.add(SpendingEntry.fromJson(jsonDecode(value) as Map<String, dynamic>)); } catch (_) {} } if (mounted) setState(() { consentActive = prefs.getBool('consent_active') ?? true; if (loaded.isNotEmpty) spending..clear()..addAll(loaded); }); } finally { if (!_stateReady.isCompleted) _stateReady.complete(); } }
   Future<void> _setConsent(bool value) async { final prefs = await SharedPreferences.getInstance(); await prefs.setBool('consent_active', value); if (mounted) setState(() => consentActive = value); }
+  Future<bool> _saveSpending() async { if (kIsWeb) return false; final prefs = await SharedPreferences.getInstance(); return prefs.setStringList('spending_entries', spending.map((e) => jsonEncode(e.toJson())).toList()); }
+  Future<void> _exportData() async { final payload = const JsonEncoder.withIndent('  ').convert({'schemaVersion': 1, 'exportedAt': DateTime.now().toIso8601String(), 'spending': spending.map((e) => e.toJson()).toList(), 'mood': moods.map((e) => e.toJson()).toList()}); await Clipboard.setData(ClipboardData(text: payload)); if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Dados copiados. Cole em um arquivo seguro.'))); }
   final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
-  Future<void> addSpending() async { final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) setState(() => spending.insert(0, entry)); }
+  Future<void> addSpending() async { await _stateReady.future; if (!mounted) return; final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); final saved = await _saveSpending(); if (!mounted) return; if (!saved && !kIsWeb) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Não foi possível persistir o registro.'))); } }
   Future<void> addMood() async { final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: () {}, tooltip: 'Privacidade', icon: const Icon(Icons.lock_outline))]),
+    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: _exportData, tooltip: 'Exportar dados', icon: const Icon(Icons.download)), IconButton(onPressed: () {}, tooltip: 'Privacidade', icon: const Icon(Icons.lock_outline))]),
     floatingActionButton: Column(mainAxisSize: MainAxisSize.min, children: [FloatingActionButton.extended(onPressed: addMood, icon: const Icon(Icons.mood), label: const Text('Registrar humor')), const SizedBox(height: 12), FloatingActionButton.extended(onPressed: addSpending, icon: const Icon(Icons.add), label: const Text('Registrar compra'))]),
     body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1000), child: ListView(padding: const EdgeInsets.all(24), children: [
       Text('Seu acompanhamento', style: Theme.of(context).textTheme.headlineMedium),

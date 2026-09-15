@@ -9,6 +9,9 @@ flowchart LR
   MoodService --> SyncService
   SpendingService --> SyncService
   SyncService --> Repository[(Repository)]
+  StateLoader --> SafeDecoder
+  StateLoader --> PlatformGuard
+  ExportService --> Clipboard[Flutter Clipboard]
   DesignSystem --> MoodScaleTile
   MoodScaleTile --> Semantics[Flutter Semantics]
 ```

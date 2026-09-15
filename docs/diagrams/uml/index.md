@@ -4,5 +4,6 @@ Os 14 diagramas previstos e seus contratos estão registrados em `docs/01-TRS.md
 
 Estado versionado: CI/CD possui pipeline de verificação, auditoria de dependências, detecção de segredos, builds Web/Android e publicação Pages. Falhas são P0 e devem atualizar este catálogo e o C4 de implantação antes do fechamento.
 
+PR #16 adiciona StateLoader, SafeDecoder, PlatformGuard e ExportService como controles contra corrida, corrupção, persistência Web indevida e exportação sem mecanismo de transferência.
 Modelo planejado: `PatientProfessionalLink`, `ConsentScope`, `MissingDataReason`, `AuditEvent` e `ExportPackage` serão entregues nas issues #11–#14.
 O componente `MoodScaleTile` é a primeira unidade do design system: tokeniza escala, acessibilidade e animação de feedback, sem dependência externa.
