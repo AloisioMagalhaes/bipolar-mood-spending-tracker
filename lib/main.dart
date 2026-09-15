@@ -15,6 +15,7 @@ class SpendingEntry {
   factory SpendingEntry.fromJson(Map<String, dynamic> j) => SpendingEntry(date: DateTime.parse(j['date'] as String), amount: (j['amount'] as num).toDouble(), category: j['category'] as String, motive: j['motive'] as String, impulsive: j['impulsive'] as bool);
 }
 class MoodEntry { const MoodEntry({required this.mood, required this.energy, required this.sleep}); final int mood, energy, sleep; Map<String, dynamic> toJson() => {'mood': mood, 'energy': energy, 'sleep': sleep}; }
+class ProfessionalLink { const ProfessionalLink({required this.code, required this.active}); final String code; final bool active; }
 
 class MoodLedgerApp extends StatelessWidget {
   const MoodLedgerApp({super.key});
@@ -30,18 +31,20 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final moods = <MoodEntry>[const MoodEntry(mood: 6, energy: 7, sleep: 7)];
   bool consentActive = true;
+  ProfessionalLink? professionalLink;
   final _stateReady = Completer<void>();
   @override void initState() { super.initState(); _loadState(); }
   Future<void> _loadState() async { try { if (kIsWeb) { _stateReady.complete(); return; } final prefs = await SharedPreferences.getInstance(); final raw = prefs.getStringList('spending_entries') ?? []; final loaded = <SpendingEntry>[]; for (final value in raw) { try { loaded.add(SpendingEntry.fromJson(jsonDecode(value) as Map<String, dynamic>)); } catch (_) {} } if (mounted) setState(() { consentActive = prefs.getBool('consent_active') ?? true; if (loaded.isNotEmpty) spending..clear()..addAll(loaded); }); } finally { if (!_stateReady.isCompleted) _stateReady.complete(); } }
   Future<void> _setConsent(bool value) async { final prefs = await SharedPreferences.getInstance(); await prefs.setBool('consent_active', value); if (mounted) setState(() => consentActive = value); }
   Future<bool> _saveSpending() async { if (kIsWeb) return false; final prefs = await SharedPreferences.getInstance(); return prefs.setStringList('spending_entries', spending.map((e) => jsonEncode(e.toJson())).toList()); }
   Future<void> _exportData() async { final payload = const JsonEncoder.withIndent('  ').convert({'schemaVersion': 1, 'exportedAt': DateTime.now().toIso8601String(), 'spending': spending.map((e) => e.toJson()).toList(), 'mood': moods.map((e) => e.toJson()).toList()}); await Clipboard.setData(ClipboardData(text: payload)); if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Dados copiados. Cole em um arquivo seguro.'))); }
+  Future<void> _linkProfessional() async { final code = await showDialog<String>(context: context, builder: (_) => const LinkDialog()); if (code != null && mounted) setState(() => professionalLink = ProfessionalLink(code: code, active: true)); }
   final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
   Future<void> addSpending() async { await _stateReady.future; if (!mounted) return; final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); final saved = await _saveSpending(); if (!mounted) return; if (!saved && !kIsWeb) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Não foi possível persistir o registro.'))); } }
   Future<void> addMood() async { final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: _exportData, tooltip: 'Exportar dados', icon: const Icon(Icons.download)), IconButton(onPressed: () {}, tooltip: 'Privacidade', icon: const Icon(Icons.lock_outline))]),
+    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: _linkProfessional, tooltip: 'Vincular profissional', icon: const Icon(Icons.people_outline)), IconButton(onPressed: _exportData, tooltip: 'Exportar dados', icon: const Icon(Icons.download)), IconButton(onPressed: () {}, tooltip: 'Privacidade', icon: const Icon(Icons.lock_outline))]),
     floatingActionButton: Column(mainAxisSize: MainAxisSize.min, children: [FloatingActionButton.extended(onPressed: addMood, icon: const Icon(Icons.mood), label: const Text('Registrar humor')), const SizedBox(height: 12), FloatingActionButton.extended(onPressed: addSpending, icon: const Icon(Icons.add), label: const Text('Registrar compra'))]),
     body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1000), child: ListView(padding: const EdgeInsets.all(24), children: [
       Text('Seu acompanhamento', style: Theme.of(context).textTheme.headlineMedium),
@@ -49,6 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
       const SizedBox(height: 24),
       Wrap(spacing: 16, runSpacing: 16, children: [MetricCard(label: 'Humor recente', value: '${moods.first.mood}/10', icon: Icons.mood), MetricCard(label: 'Energia recente', value: '${moods.first.energy}/10', icon: Icons.bolt), MetricCard(label: 'Sono recente', value: '${moods.first.sleep}h', icon: Icons.bedtime), MetricCard(label: 'Gastos registrados', value: 'R\$ ${spending.fold<double>(0, (s, e) => s + e.amount).toStringAsFixed(2)}', icon: Icons.payments)]),
       const SizedBox(height: 20), Card(child: SwitchListTile(title: const Text('Compartilhamento consentido'), subtitle: Text(consentActive ? 'Ativo para revisão profissional' : 'Desativado'), value: consentActive, onChanged: _setConsent)),
+      if (professionalLink != null) Card(child: ListTile(leading: const Icon(Icons.verified_user), title: const Text('Profissional vinculado'), subtitle: Text('Código ${professionalLink!.code} · acesso autorizado'), trailing: TextButton(onPressed: () => setState(() => professionalLink = null), child: const Text('Revogar')))),
       const SizedBox(height: 8), Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
       const Text('Eventos próximos no tempo não provam causalidade.'),
       Card(child: ListTile(leading: const CircleAvatar(child: Icon(Icons.mood)), title: Text('Humor ${moods.first.mood}/10 · energia ${moods.first.energy}/10'), subtitle: Text('Sono: ${moods.first.sleep}h · autorrelato'), trailing: const Text('hoje'))),
@@ -66,3 +70,6 @@ class _SpendingDialogState extends State<SpendingDialog> {
 }
 class MoodDialog extends StatefulWidget { const MoodDialog({super.key}); @override State<MoodDialog> createState() => _MoodDialogState(); }
 class _MoodDialogState extends State<MoodDialog> { double mood = 5, energy = 5; final sleep = TextEditingController(text: '7'); @override Widget build(BuildContext c) => AlertDialog(title: const Text('Registrar estado mental'), content: Column(mainAxisSize: MainAxisSize.min, children: [MoodScaleTile(label: 'Humor', value: mood, onChanged: (v) => setState(() => mood = v)), const SizedBox(height: 8), MoodScaleTile(label: 'Energia', value: energy, onChanged: (v) => setState(() => energy = v)), TextField(controller: sleep, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Horas de sono'))]), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancelar')), FilledButton(onPressed: () { final h = int.tryParse(sleep.text); if (h != null && h <= 24) Navigator.pop(c, MoodEntry(mood: mood.round(), energy: energy.round(), sleep: h)); }, child: const Text('Salvar'))]); }
+
+class LinkDialog extends StatefulWidget { const LinkDialog({super.key}); @override State<LinkDialog> createState() => _LinkDialogState(); }
+class _LinkDialogState extends State<LinkDialog> { final code = TextEditingController(); bool accepted = false; @override Widget build(BuildContext c) => AlertDialog(title: const Text('Vincular profissional'), content: Column(mainAxisSize: MainAxisSize.min, children: [TextField(controller: code, decoration: const InputDecoration(labelText: 'Código do convite')), CheckboxListTile(value: accepted, onChanged: (v) => setState(() => accepted = v ?? false), title: const Text('Aceito compartilhar meus registros'))]), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancelar')), FilledButton(onPressed: accepted && code.text.trim().isNotEmpty ? () => Navigator.pop(c, code.text.trim()) : null, child: const Text('Vincular'))]); }

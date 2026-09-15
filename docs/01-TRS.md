@@ -49,6 +49,7 @@ Falsos alertas, estigma, exposição financeira, coerção por terceiros, baixa 
 - RF-11: vínculo exige convite temporário, aceite bilateral, escopo visível, revogação e auditoria.
 - RF-12: exportação produz dados legíveis pelo paciente e profissional.
 - RF-13: padrões são rotulados como autorrelato/tendência para revisão, nunca como fase bipolar.
+- RF-14: vínculo demonstrativo exige código e confirmação explícita; produção exige backend, expiração e auditoria server-side.
 
 ## 8. Métricas e pesquisa
 
