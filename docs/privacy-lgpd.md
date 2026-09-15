@@ -33,6 +33,9 @@ ou fase bipolar. A minimização reduz exposição e superfície de ataque [1][2
 - RF-PRIV-07: documentar retenção; até existir política aprovada, manter dados
   somente no dispositivo e permitir eliminação pelo usuário.
 
+- RF-PRIV-08: oferecer exclusão local explícita de registros, consentimentos e
+  vínculo, com confirmação e feedback após a operação.
+
 ## Papéis e limites
 
 Antes de backend, estudo ou compartilhamento real, deve haver definição formal

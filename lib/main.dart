@@ -40,13 +40,21 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<bool> _saveSpending() async { if (kIsWeb) return false; final prefs = await SharedPreferences.getInstance(); return prefs.setStringList('spending_entries', spending.map((e) => jsonEncode(e.toJson())).toList()); }
   Future<void> _exportData() async { if (!consent['export']!) { _notice('Ative o consentimento de exportação antes de continuar.'); return; } final payload = const JsonEncoder.withIndent('  ').convert({'schemaVersion': 1, 'exportedAt': DateTime.now().toIso8601String(), 'spending': spending.map((e) => e.toJson()).toList(), 'mood': moods.map((e) => e.toJson()).toList()}); await Clipboard.setData(ClipboardData(text: payload)); if (mounted) _notice('Dados copiados. Cole em um arquivo seguro.'); }
   void _notice(String text) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  Future<void> _eraseLocalData() async {
+    final confirmed = await showDialog<bool>(context: context, builder: (c) => AlertDialog(title: const Text('Excluir dados locais?'), content: const Text('Esta ação remove gastos, autorrelatos, consentimentos e vínculo deste dispositivo.'), actions: [TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancelar')), FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Excluir'))])) ?? false;
+    if (!confirmed) return;
+    if (!kIsWeb) { final prefs = await SharedPreferences.getInstance(); await prefs.remove('spending_entries'); for (final key in consent.keys) { await prefs.remove('consent_$key'); } }
+    if (!mounted) return;
+    setState(() { spending.clear(); moods.clear(); professionalLink = null; for (final key in consent.keys) { consent[key] = false; } });
+    _notice('Dados locais excluídos.');
+  }
   Future<void> _linkProfessional() async { if (!consent['link']!) { _notice('Ative o consentimento de vínculo antes de continuar.'); return; } final code = await showDialog<String>(context: context, builder: (_) => const LinkDialog()); if (code != null && mounted) setState(() => professionalLink = ProfessionalLink(code: code, active: true)); }
   final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
   Future<void> addSpending() async { await _stateReady.future; if (!mounted || !consent['spending']!) { _notice('Ative o consentimento de gastos antes de registrar.'); return; } final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); final saved = await _saveSpending(); if (!mounted) return; if (!saved && !kIsWeb) _notice('Não foi possível persistir o registro.'); } }
   Future<void> addMood() async { if (!consent['mood']!) { _notice('Ative o consentimento de autorrelato antes de registrar.'); return; } final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: _linkProfessional, tooltip: 'Vincular profissional', icon: const Icon(Icons.people_outline)), IconButton(onPressed: _exportData, tooltip: 'Exportar dados', icon: const Icon(Icons.download)), IconButton(onPressed: () {}, tooltip: 'Privacidade', icon: const Icon(Icons.lock_outline))]),
+    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: _linkProfessional, tooltip: 'Vincular profissional', icon: const Icon(Icons.people_outline)), IconButton(onPressed: _exportData, tooltip: 'Exportar dados', icon: const Icon(Icons.download)), IconButton(onPressed: _eraseLocalData, tooltip: 'Excluir dados locais', icon: const Icon(Icons.delete_outline))]),
     floatingActionButton: Column(mainAxisSize: MainAxisSize.min, children: [FloatingActionButton.extended(onPressed: addMood, icon: const Icon(Icons.mood), label: const Text('Registrar humor')), const SizedBox(height: 12), FloatingActionButton.extended(onPressed: addSpending, icon: const Icon(Icons.add), label: const Text('Registrar compra'))]),
     body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1000), child: ListView(padding: const EdgeInsets.all(24), children: [
       Text('Seu acompanhamento', style: Theme.of(context).textTheme.headlineMedium),
