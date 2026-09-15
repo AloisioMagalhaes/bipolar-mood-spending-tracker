@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const MoodLedgerApp());
@@ -26,13 +28,14 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final moods = <MoodEntry>[const MoodEntry(mood: 6, energy: 7, sleep: 7)];
   bool consentActive = true;
+  final _stateReady = Completer<void>();
   @override void initState() { super.initState(); _loadState(); }
-  Future<void> _loadState() async { final prefs = await SharedPreferences.getInstance(); final raw = prefs.getStringList('spending_entries') ?? []; if (mounted) setState(() { consentActive = prefs.getBool('consent_active') ?? true; if (raw.isNotEmpty) spending..clear()..addAll(raw.map((x) => SpendingEntry.fromJson(jsonDecode(x) as Map<String, dynamic>))); }); }
+  Future<void> _loadState() async { try { if (kIsWeb) { _stateReady.complete(); return; } final prefs = await SharedPreferences.getInstance(); final raw = prefs.getStringList('spending_entries') ?? []; final loaded = <SpendingEntry>[]; for (final value in raw) { try { loaded.add(SpendingEntry.fromJson(jsonDecode(value) as Map<String, dynamic>)); } catch (_) {} } if (mounted) setState(() { consentActive = prefs.getBool('consent_active') ?? true; if (loaded.isNotEmpty) spending..clear()..addAll(loaded); }); } finally { if (!_stateReady.isCompleted) _stateReady.complete(); } }
   Future<void> _setConsent(bool value) async { final prefs = await SharedPreferences.getInstance(); await prefs.setBool('consent_active', value); if (mounted) setState(() => consentActive = value); }
-  Future<void> _saveSpending() async { final prefs = await SharedPreferences.getInstance(); await prefs.setStringList('spending_entries', spending.map((e) => jsonEncode(e.toJson())).toList()); }
-  Future<void> _exportData() async { final payload = const JsonEncoder.withIndent('  ').convert({'schemaVersion': 1, 'exportedAt': DateTime.now().toIso8601String(), 'spending': spending.map((e) => e.toJson()).toList(), 'mood': moods.map((e) => e.toJson()).toList()}); if (mounted) showDialog<void>(context: context, builder: (_) => AlertDialog(title: const Text('Exportação JSON'), content: SelectableText(payload), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fechar'))])); }
+  Future<bool> _saveSpending() async { if (kIsWeb) return false; final prefs = await SharedPreferences.getInstance(); return prefs.setStringList('spending_entries', spending.map((e) => jsonEncode(e.toJson())).toList()); }
+  Future<void> _exportData() async { final payload = const JsonEncoder.withIndent('  ').convert({'schemaVersion': 1, 'exportedAt': DateTime.now().toIso8601String(), 'spending': spending.map((e) => e.toJson()).toList(), 'mood': moods.map((e) => e.toJson()).toList()}); await Clipboard.setData(ClipboardData(text: payload)); if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Dados copiados. Cole em um arquivo seguro.'))); }
   final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
-  Future<void> addSpending() async { final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); await _saveSpending(); } }
+  Future<void> addSpending() async { await _stateReady.future; final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); final saved = await _saveSpending(); if (!saved && mounted && !kIsWeb) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Não foi possível persistir o registro.'))); } }
   Future<void> addMood() async { final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
   @override
   Widget build(BuildContext context) => Scaffold(
