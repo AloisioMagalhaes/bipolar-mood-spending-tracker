@@ -6,6 +6,7 @@ flowchart LR
   Timeline --> SpendingService
   ClinicianDashboard --> CorrelationView
   ConsentScreen --> ConsentService
+  ConsentService --> ConsentScope[Escopos: mood, spending, link, export]
   MoodService --> SyncService
   SpendingService --> SyncService
   SyncService --> Repository[(Repository)]
