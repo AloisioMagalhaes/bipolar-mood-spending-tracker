@@ -9,5 +9,6 @@ flowchart LR
   MoodService --> SyncService
   SpendingService --> SyncService
   SyncService --> Repository[(Repository)]
+  DesignSystem --> MoodScaleTile
+  MoodScaleTile --> Semantics[Flutter Semantics]
 ```
-
