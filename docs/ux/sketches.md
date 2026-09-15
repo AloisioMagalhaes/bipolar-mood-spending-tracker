@@ -63,6 +63,8 @@ O MVP usa escalas contínuas de humor/energia e linguagem do próprio paciente, 
 
 Nenhum vínculo deve ser criado unilateralmente sem aceite do outro lado.
 
+Implementação atual: `LinkDialog` aceita um código informado pelo paciente e exige confirmação explícita antes de criar `ProfessionalLink`; “Revogar” remove o vínculo da sessão. Persistência remota, expiração criptográfica e auditoria server-side permanecem pendentes da issue #12.
+
 ## Referências
 
 - **F1:** Flutter. *Adaptive and responsive design*. https://docs.flutter.dev/ui/adaptive-responsive.

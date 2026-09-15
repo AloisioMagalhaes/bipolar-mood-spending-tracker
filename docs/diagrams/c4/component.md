@@ -12,6 +12,8 @@ flowchart LR
   StateLoader --> SafeDecoder
   StateLoader --> PlatformGuard
   ExportService --> Clipboard[Flutter Clipboard]
+  LinkDialog --> ProfessionalLink
+  LinkDialog --> ConsentScope
   DesignSystem --> MoodScaleTile
   MoodScaleTile --> Semantics[Flutter Semantics]
 ```
