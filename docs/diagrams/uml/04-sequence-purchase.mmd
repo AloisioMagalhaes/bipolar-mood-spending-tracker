@@ -1,0 +1,10 @@
+sequenceDiagram
+actor P as Paciente
+participant D as DashboardPage
+participant F as SpendingDialog
+participant S as SharedPreferences
+P->>D: tocar Registrar compra
+D->>F: abrir formulário
+P->>F: informar valor/motivo
+F-->>D: SpendingEntry
+D->>S: setStringList

@@ -1,0 +1,11 @@
+sequenceDiagram
+participant D as DashboardPage
+participant G as Guard kIsWeb
+participant S as SharedPreferences
+D->>G: verificar plataforma
+alt Android
+ G-->>D: permitir persistência
+ D->>S: carregar/salvar
+else Web
+ G-->>D: não persistir sensíveis
+end

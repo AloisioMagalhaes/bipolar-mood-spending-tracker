@@ -1,0 +1,7 @@
+stateDiagram-v2
+[*] --> Draft
+Draft --> Validated: campos válidos
+Draft --> Missing: incompleto
+Validated --> Saved: persistência confirmada
+Saved --> Exported: exportação solicitada
+Missing --> Draft: corrigir

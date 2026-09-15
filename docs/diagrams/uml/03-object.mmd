@@ -1,0 +1,6 @@
+classDiagram
+class dashboard_MoodLedgerApp {moods: [MoodEntry] spending: [SpendingEntry] consentActive: true}
+class mood_demo {mood: 6 energy: 7 sleep: 7}
+class spending_demo {amount: 89.90 category: Alimentacao impulsive: false}
+dashboard_MoodLedgerApp --> mood_demo
+dashboard_MoodLedgerApp --> spending_demo

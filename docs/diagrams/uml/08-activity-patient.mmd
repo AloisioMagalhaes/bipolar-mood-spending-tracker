@@ -1,0 +1,8 @@
+flowchart TD
+Start((Início)) --> Consent{Consentimento ativo?}
+Consent -->|não| Explain[Exibir escopo]
+Explain --> Grant[Paciente decide]
+Grant --> Record[Registrar evento]
+Consent -->|sim| Record
+Record --> Review[Revisar linha do tempo]
+Review --> End((Fim))
