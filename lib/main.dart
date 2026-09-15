@@ -1,122 +1,45 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() => runApp(const MoodLedgerApp());
+
+class SpendingEntry {
+  const SpendingEntry({required this.date, required this.amount, required this.category, required this.motive, required this.impulsive});
+  final DateTime date; final double amount; final String category; final String motive; final bool impulsive;
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class MoodLedgerApp extends StatelessWidget {
+  const MoodLedgerApp({super.key});
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(title: 'MoodLedger', theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo), useMaterial3: true), home: const DashboardPage());
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
+  @override State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
+class _DashboardPageState extends State<DashboardPage> {
+  final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
+  Future<void> addSpending() async { final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) setState(() => spending.insert(0, entry)); }
   @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: () {}, tooltip: 'Privacidade', icon: const Icon(Icons.lock_outline))]),
+    floatingActionButton: FloatingActionButton.extended(onPressed: addSpending, icon: const Icon(Icons.add), label: const Text('Registrar compra')),
+    body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1000), child: ListView(padding: const EdgeInsets.all(24), children: [
+      Text('Seu acompanhamento', style: Theme.of(context).textTheme.headlineMedium),
+      const Text('Registre o contexto. Os padrões são informativos e devem ser revisados com seu profissional.'),
+      const SizedBox(height: 24),
+      Wrap(spacing: 16, children: [MetricCard(label: 'Humor recente', value: '6/10', icon: Icons.mood), MetricCard(label: 'Energia recente', value: '7/10', icon: Icons.bolt), MetricCard(label: 'Gastos registrados', value: 'R\$ ${spending.fold<double>(0, (s, e) => s + e.amount).toStringAsFixed(2)}', icon: Icons.payments)]),
+      const SizedBox(height: 28), Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
+      ...spending.map((e) => Card(child: ListTile(leading: CircleAvatar(child: Icon(e.impulsive ? Icons.flash_on : Icons.receipt_long)), title: Text('${e.category} · R\$ ${e.amount.toStringAsFixed(2)}'), subtitle: Text('${e.motive}${e.impulsive ? ' · marcada como impulsiva' : ''}'), trailing: Text('${e.date.day}/${e.date.month}')))),
+    ]))),
+  );
+}
+
+class MetricCard extends StatelessWidget { const MetricCard({super.key, required this.label, required this.value, required this.icon}); final String label, value; final IconData icon; @override Widget build(BuildContext c) => SizedBox(width: 240, child: Card(child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [Icon(icon), const SizedBox(width: 12), Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label), Text(value, style: Theme.of(c).textTheme.titleLarge)])])))); }
+
+class SpendingDialog extends StatefulWidget { const SpendingDialog({super.key}); @override State<SpendingDialog> createState() => _SpendingDialogState(); }
+class _SpendingDialogState extends State<SpendingDialog> {
+  final amount = TextEditingController(); final motive = TextEditingController(); String category = 'Alimentação'; bool impulsive = false;
+  @override Widget build(BuildContext context) => AlertDialog(title: const Text('Registrar compra'), content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [TextField(controller: amount, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Valor (R\$)')), DropdownButtonFormField<String>(value: category, items: ['Alimentação', 'Lazer', 'Casa', 'Transporte', 'Outro'].map((x) => DropdownMenuItem(value: x, child: Text(x))).toList(), onChanged: (x) => setState(() => category = x!)), TextField(controller: motive, decoration: const InputDecoration(labelText: 'Motivo da compra')), SwitchListTile(title: const Text('Foi impulsiva?'), value: impulsive, onChanged: (x) => setState(() => impulsive = x))])), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')), FilledButton(onPressed: () { final v = double.tryParse(amount.text.replaceAll(',', '.')); if (v != null && v > 0 && motive.text.trim().isNotEmpty) Navigator.pop(context, SpendingEntry(date: DateTime.now(), amount: v, category: category, motive: motive.text.trim(), impulsive: impulsive)); }, child: const Text('Salvar'))]);
 }
