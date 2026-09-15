@@ -21,6 +21,7 @@ Decisões de requisitos, limites clínicos, métricas e referências: [docs/01-T
 - [Diagramas C4](docs/diagrams/c4/): contexto, contêineres, componentes, código e implantação.
 - [Diagramas UML 2.x](docs/diagrams/uml/): 14 modelos Mermaid e SVGs renderizados.
 - [Backlog](docs/backlog.md), [auditoria Sourcery](docs/sourcery-audit.md) e [regras de workflow](docs/workflow-rules.md).
+- [Governança LGPD](docs/privacy-lgpd.md): classificação, minimização, consentimento e direitos do titular.
 
 ## Qualidade e entrega
 
