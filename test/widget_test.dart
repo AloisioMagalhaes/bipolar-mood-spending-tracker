@@ -16,6 +16,7 @@ void main() {
 
   testWidgets('consentimentos são granulares e exportação exige escopo', (tester) async {
     await tester.pumpWidget(const MoodLedgerApp());
+    await tester.pumpAndSettle();
     expect(find.text('Consentimentos'), findsOneWidget);
     expect(find.text('Autorrelatos'), findsOneWidget);
     expect(find.text('Gastos'), findsOneWidget);
