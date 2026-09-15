@@ -32,6 +32,7 @@ class _DashboardPageState extends State<DashboardPage> {
   final moods = <MoodEntry>[const MoodEntry(mood: 6, energy: 7, sleep: 7)];
   bool consentActive = true;
   ProfessionalLink? professionalLink;
+  bool reduceMotion = false;
   final _stateReady = Completer<void>();
   @override void initState() { super.initState(); _loadState(); }
   Future<void> _loadState() async { try { if (kIsWeb) { _stateReady.complete(); return; } final prefs = await SharedPreferences.getInstance(); final raw = prefs.getStringList('spending_entries') ?? []; final loaded = <SpendingEntry>[]; for (final value in raw) { try { loaded.add(SpendingEntry.fromJson(jsonDecode(value) as Map<String, dynamic>)); } catch (_) {} } if (mounted) setState(() { consentActive = prefs.getBool('consent_active') ?? true; if (loaded.isNotEmpty) spending..clear()..addAll(loaded); }); } finally { if (!_stateReady.isCompleted) _stateReady.complete(); } }
@@ -51,6 +52,10 @@ class _DashboardPageState extends State<DashboardPage> {
       const Text('Registre o contexto. Os padrões são informativos e devem ser revisados com seu profissional.'),
       const SizedBox(height: 24),
       Wrap(spacing: 16, runSpacing: 16, children: [MetricCard(label: 'Humor recente', value: '${moods.first.mood}/10', icon: Icons.mood), MetricCard(label: 'Energia recente', value: '${moods.first.energy}/10', icon: Icons.bolt), MetricCard(label: 'Sono recente', value: '${moods.first.sleep}h', icon: Icons.bedtime), MetricCard(label: 'Gastos registrados', value: 'R\$ ${spending.fold<double>(0, (s, e) => s + e.amount).toStringAsFixed(2)}', icon: Icons.payments)]),
+      const SizedBox(height: 20), Card(child: SwitchListTile(title: const Text('Reduzir animações'), subtitle: const Text('Mantém informação e remove movimento decorativo'), value: reduceMotion, onChanged: (v) => setState(() => reduceMotion = v))),
+      const SizedBox(height: 8), Text('Resumo visual', style: Theme.of(context).textTheme.titleLarge),
+      TrendBar(label: 'Humor autorrelatado', value: moods.first.mood / 10, color: Colors.indigo, animate: !reduceMotion),
+      TrendBar(label: 'Energia autorrelatada', value: moods.first.energy / 10, color: Colors.orange, animate: !reduceMotion),
       const SizedBox(height: 20), Card(child: SwitchListTile(title: const Text('Compartilhamento consentido'), subtitle: Text(consentActive ? 'Ativo para revisão profissional' : 'Desativado'), value: consentActive, onChanged: _setConsent)),
       if (professionalLink != null) Card(child: ListTile(leading: const Icon(Icons.verified_user), title: const Text('Profissional vinculado'), subtitle: Text('Código ${professionalLink!.code} · acesso autorizado'), trailing: TextButton(onPressed: () => setState(() => professionalLink = null), child: const Text('Revogar')))),
       const SizedBox(height: 8), Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
@@ -73,3 +78,5 @@ class _MoodDialogState extends State<MoodDialog> { double mood = 5, energy = 5; 
 
 class LinkDialog extends StatefulWidget { const LinkDialog({super.key}); @override State<LinkDialog> createState() => _LinkDialogState(); }
 class _LinkDialogState extends State<LinkDialog> { final code = TextEditingController(); bool accepted = false; @override Widget build(BuildContext c) => AlertDialog(title: const Text('Vincular profissional'), content: Column(mainAxisSize: MainAxisSize.min, children: [TextField(controller: code, decoration: const InputDecoration(labelText: 'Código do convite')), CheckboxListTile(value: accepted, onChanged: (v) => setState(() => accepted = v ?? false), title: const Text('Aceito compartilhar meus registros'))]), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancelar')), FilledButton(onPressed: accepted && code.text.trim().isNotEmpty ? () => Navigator.pop(c, code.text.trim()) : null, child: const Text('Vincular'))]); }
+
+class TrendBar extends StatelessWidget { const TrendBar({super.key, required this.label, required this.value, required this.color, required this.animate}); final String label; final double value; final Color color; final bool animate; @override Widget build(BuildContext c) => Semantics(label: '$label: ${(value * 10).round()} de 10', value: '${(value * 10).round()} de 10', child: Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label), ClipRRect(borderRadius: BorderRadius.circular(8), child: animate ? TweenAnimationBuilder<double>(tween: Tween(begin: 0, end: value), duration: const Duration(milliseconds: 250), builder: (_, v, __) => LinearProgressIndicator(value: v, minHeight: 14, color: color)) : LinearProgressIndicator(value: value, minHeight: 14, color: color))]))); }

@@ -14,6 +14,8 @@ flowchart LR
   ExportService --> Clipboard[Flutter Clipboard]
   LinkDialog --> ProfessionalLink
   LinkDialog --> ConsentScope
+  Timeline --> TrendBar
+  TrendBar --> Semantics[Flutter Semantics]
   DesignSystem --> MoodScaleTile
   MoodScaleTile --> Semantics[Flutter Semantics]
 ```
