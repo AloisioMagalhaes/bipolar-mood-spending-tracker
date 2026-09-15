@@ -1,7 +1,30 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:moodledger/main.dart';
+
 void main() {
+  test(
+    'MoodEntry serializa os campos de autorrelato sem classificação clínica',
+    () {
+      final entry = const MoodEntry(
+        mood: 6,
+        energy: 7,
+        sleep: 8,
+        irritability: 2,
+        impulsivity: 3,
+        medicationTaken: true,
+      );
+      expect(entry.toJson(), {
+        'mood': 6,
+        'energy': 7,
+        'sleep': 8,
+        'irritability': 2,
+        'impulsivity': 3,
+        'medicationTaken': true,
+      });
+    },
+  );
+
   testWidgets('dashboard acessível e visualização reduzida', (tester) async {
     await tester.pumpWidget(const MoodLedgerApp());
     await tester.pump(const Duration(milliseconds: 300));
@@ -14,11 +37,16 @@ void main() {
     expect(toggle, findsOneWidget);
   });
 
-  testWidgets('consentimentos são granulares e exportação exige escopo', (tester) async {
+  testWidgets('consentimentos são granulares e exportação exige escopo', (
+    tester,
+  ) async {
     await tester.pumpWidget(const MoodLedgerApp());
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.byIcon(Icons.download));
     await tester.pump();
-    expect(find.text('Ative o consentimento de exportação antes de continuar.'), findsOneWidget);
+    expect(
+      find.text('Ative o consentimento de exportação antes de continuar.'),
+      findsOneWidget,
+    );
   });
 }
