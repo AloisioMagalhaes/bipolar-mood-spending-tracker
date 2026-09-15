@@ -6,6 +6,7 @@ class SpendingEntry {
   const SpendingEntry({required this.date, required this.amount, required this.category, required this.motive, required this.impulsive});
   final DateTime date; final double amount; final String category; final String motive; final bool impulsive;
 }
+class MoodEntry { const MoodEntry({required this.mood, required this.energy, required this.sleep}); final int mood, energy, sleep; }
 
 class MoodLedgerApp extends StatelessWidget {
   const MoodLedgerApp({super.key});
@@ -19,17 +20,19 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  final moods = <MoodEntry>[const MoodEntry(mood: 6, energy: 7, sleep: 7)];
   final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
   Future<void> addSpending() async { final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) setState(() => spending.insert(0, entry)); }
+  Future<void> addMood() async { final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('MoodLedger'), actions: [IconButton(onPressed: () {}, tooltip: 'Privacidade', icon: const Icon(Icons.lock_outline))]),
-    floatingActionButton: FloatingActionButton.extended(onPressed: addSpending, icon: const Icon(Icons.add), label: const Text('Registrar compra')),
+    floatingActionButton: Column(mainAxisSize: MainAxisSize.min, children: [FloatingActionButton.extended(onPressed: addMood, icon: const Icon(Icons.mood), label: const Text('Registrar humor')), const SizedBox(height: 12), FloatingActionButton.extended(onPressed: addSpending, icon: const Icon(Icons.add), label: const Text('Registrar compra'))]),
     body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1000), child: ListView(padding: const EdgeInsets.all(24), children: [
       Text('Seu acompanhamento', style: Theme.of(context).textTheme.headlineMedium),
       const Text('Registre o contexto. Os padrões são informativos e devem ser revisados com seu profissional.'),
       const SizedBox(height: 24),
-      Wrap(spacing: 16, children: [MetricCard(label: 'Humor recente', value: '6/10', icon: Icons.mood), MetricCard(label: 'Energia recente', value: '7/10', icon: Icons.bolt), MetricCard(label: 'Gastos registrados', value: 'R\$ ${spending.fold<double>(0, (s, e) => s + e.amount).toStringAsFixed(2)}', icon: Icons.payments)]),
+      Wrap(spacing: 16, runSpacing: 16, children: [MetricCard(label: 'Humor recente', value: '${moods.first.mood}/10', icon: Icons.mood), MetricCard(label: 'Energia recente', value: '${moods.first.energy}/10', icon: Icons.bolt), MetricCard(label: 'Sono recente', value: '${moods.first.sleep}h', icon: Icons.bedtime), MetricCard(label: 'Gastos registrados', value: 'R\$ ${spending.fold<double>(0, (s, e) => s + e.amount).toStringAsFixed(2)}', icon: Icons.payments)]),
       const SizedBox(height: 28), Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
       ...spending.map((e) => Card(child: ListTile(leading: CircleAvatar(child: Icon(e.impulsive ? Icons.flash_on : Icons.receipt_long)), title: Text('${e.category} · R\$ ${e.amount.toStringAsFixed(2)}'), subtitle: Text('${e.motive}${e.impulsive ? ' · marcada como impulsiva' : ''}'), trailing: Text('${e.date.day}/${e.date.month}')))),
     ]))),
@@ -43,3 +46,5 @@ class _SpendingDialogState extends State<SpendingDialog> {
   final amount = TextEditingController(); final motive = TextEditingController(); String category = 'Alimentação'; bool impulsive = false;
   @override Widget build(BuildContext context) => AlertDialog(title: const Text('Registrar compra'), content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [TextField(controller: amount, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Valor (R\$)')), DropdownButtonFormField<String>(initialValue: category, items: ['Alimentação', 'Lazer', 'Casa', 'Transporte', 'Outro'].map((x) => DropdownMenuItem(value: x, child: Text(x))).toList(), onChanged: (x) => setState(() => category = x!)), TextField(controller: motive, decoration: const InputDecoration(labelText: 'Motivo da compra')), SwitchListTile(title: const Text('Foi impulsiva?'), value: impulsive, onChanged: (x) => setState(() => impulsive = x))])), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')), FilledButton(onPressed: () { final v = double.tryParse(amount.text.replaceAll(',', '.')); if (v != null && v > 0 && motive.text.trim().isNotEmpty) Navigator.pop(context, SpendingEntry(date: DateTime.now(), amount: v, category: category, motive: motive.text.trim(), impulsive: impulsive)); }, child: const Text('Salvar'))]);
 }
+class MoodDialog extends StatefulWidget { const MoodDialog({super.key}); @override State<MoodDialog> createState() => _MoodDialogState(); }
+class _MoodDialogState extends State<MoodDialog> { double mood = 5, energy = 5; final sleep = TextEditingController(text: '7'); @override Widget build(BuildContext c) => AlertDialog(title: const Text('Registrar estado mental'), content: Column(mainAxisSize: MainAxisSize.min, children: [Text('Humor: ${mood.round()}/10'), Slider(value: mood, min: 0, max: 10, divisions: 10, onChanged: (v) => setState(() => mood = v)), Text('Energia: ${energy.round()}/10'), Slider(value: energy, min: 0, max: 10, divisions: 10, onChanged: (v) => setState(() => energy = v)), TextField(controller: sleep, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Horas de sono'))]), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancelar')), FilledButton(onPressed: () { final h = int.tryParse(sleep.text); if (h != null && h <= 24) Navigator.pop(c, MoodEntry(mood: mood.round(), energy: energy.round(), sleep: h)); }, child: const Text('Salvar'))]); }
