@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const MoodLedgerApp());
@@ -35,7 +36,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<bool> _saveSpending() async { if (kIsWeb) return false; final prefs = await SharedPreferences.getInstance(); return prefs.setStringList('spending_entries', spending.map((e) => jsonEncode(e.toJson())).toList()); }
   Future<void> _exportData() async { final payload = const JsonEncoder.withIndent('  ').convert({'schemaVersion': 1, 'exportedAt': DateTime.now().toIso8601String(), 'spending': spending.map((e) => e.toJson()).toList(), 'mood': moods.map((e) => e.toJson()).toList()}); await Clipboard.setData(ClipboardData(text: payload)); if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Dados copiados. Cole em um arquivo seguro.'))); }
   final spending = <SpendingEntry>[SpendingEntry(date: DateTime.now(), amount: 89.90, category: 'Alimentação', motive: 'Necessidade planejada', impulsive: false)];
-  Future<void> addSpending() async { await _stateReady.future; final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); final saved = await _saveSpending(); if (!saved && mounted && !kIsWeb) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Não foi possível persistir o registro.'))); } }
+  Future<void> addSpending() async { await _stateReady.future; if (!mounted) return; final entry = await showDialog<SpendingEntry>(context: context, builder: (_) => const SpendingDialog()); if (entry != null) { setState(() => spending.insert(0, entry)); final saved = await _saveSpending(); if (!mounted) return; if (!saved && !kIsWeb) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Não foi possível persistir o registro.'))); } }
   Future<void> addMood() async { final entry = await showDialog<MoodEntry>(context: context, builder: (_) => const MoodDialog()); if (entry != null) setState(() => moods.insert(0, entry)); }
   @override
   Widget build(BuildContext context) => Scaffold(
