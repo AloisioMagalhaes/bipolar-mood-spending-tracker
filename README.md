@@ -23,6 +23,7 @@ Decisões de requisitos, limites clínicos, métricas e referências: [docs/01-T
 - [Backlog](docs/backlog.md), [auditoria Sourcery](docs/sourcery-audit.md) e [regras de workflow](docs/workflow-rules.md).
 - [Governança LGPD](docs/privacy-lgpd.md): classificação, minimização, consentimento e direitos do titular.
 - [Threat model e Zero Trust](docs/threat-model.md): ativos, STRIDE, fronteiras e controles futuros.
+- [Matriz de autorização](docs/authorization-matrix.md): papéis e acesso futuro por recurso.
 
 ## Qualidade e entrega
 
