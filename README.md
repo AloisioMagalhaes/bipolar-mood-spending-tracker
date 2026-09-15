@@ -10,7 +10,8 @@ Decisões de requisitos, limites clínicos, métricas e referências: [docs/01-T
 
 ## Capacidades implementadas
 
-- Registro de gastos, motivos e indicadores subjetivos de humor, energia, pensamentos, impulsividade e sono.
+- Registro de gastos, motivos e indicadores subjetivos de humor, energia, irritabilidade, impulsividade, sono e medicação autorrelatada.
+- Sinal configurável exclusivamente para revisão e pacote de exportação versionado com eventos de auditoria locais; não é diagnóstico nem alerta clínico.
 - Resumo visual com rótulos numéricos, `Semantics`, contraste redundante e redução de animações.
 - Persistência local Android tolerante a JSON inválido e exportação JSON para clipboard.
 - Vínculo demonstrativo profissional–paciente com consentimento granular, revogável e auditável localmente.
