@@ -11,3 +11,4 @@ flowchart TB
   API --> AUD[Auditoria]
 ```
 
+CI/CD é um container operacional obrigatório: valida código, segurança e builds antes do Pages/Release.
