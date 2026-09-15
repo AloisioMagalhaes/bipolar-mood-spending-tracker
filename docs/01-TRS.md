@@ -1,6 +1,6 @@
 # MoodLedger — Documento Técnico de Requisitos de Software
 
-**Versão:** 0.1.0 · **Status:** baseline do MVP · **Data:** 2026-09-15
+**Versão:** 0.2.0 · **Status:** requisitos revisados por evidência · **Data:** 2026-09-15
 
 ## 1. Objetivo
 
@@ -41,6 +41,28 @@ Linha do tempo correlacionando compra (valor, categoria, motivo e impulsividade)
 
 Falsos alertas, estigma, exposição financeira, coerção por terceiros, baixa adesão e interpretação clínica indevida. Mitigações: consentimento granular, minimização, criptografia, RLS, linguagem neutra, revisão humana e estudo de usabilidade antes de uso clínico.
 
+## 7. Requisitos derivados da evidência
+
+- RF-08: fluxo comum concluível em até 60 segundos.
+- RF-09: dados ausentes conservam motivo, sem imputação silenciosa.
+- RF-10: escalas exibem número e descrição textual; cor/emoji são complementares.
+- RF-11: vínculo exige convite temporário, aceite bilateral, escopo visível, revogação e auditoria.
+- RF-12: exportação produz dados legíveis pelo paciente e profissional.
+- RF-13: padrões são rotulados como autorrelato/tendência para revisão, nunca como fase bipolar.
+- RF-14: vínculo demonstrativo exige código e confirmação explícita; produção exige backend, expiração e auditoria server-side.
+
+## 8. Métricas e pesquisa
+
+Medir conclusão, atividade, retenção 7/30/90 dias, tempo de registro, ausência, revogação, erros de sincronização, SUS/MAUQ e carga percebida. Não usar acurácia preditiva no MVP. Revisões recomendam definições replicáveis, seguimento longo, validação externa e modelagem explícita de ausência [R6–R8].
+
+## 9. Priorização
+
+P0: qualquer falha de CI/segurança. P1: RF-08–RF-13 e persistência. P2: visualizações avançadas e sensores opt-in. P3: modelos preditivos somente após ética e validação externa.
+
+## 10. Baseline arquitetural visual
+
+Os 14 diagramas UML 2.x derivados do código-fonte estão em [`docs/diagrams/uml`](diagrams/uml/index.md); os níveis C4 estão em [`docs/diagrams/c4`](diagrams/c4). A atualização deve ocorrer no mesmo PR de qualquer mudança estrutural.
+
 ## 7. Referências iniciais
 
 - **R1:** Faurholt-Jepsen et al. *Portable technologies for digital phenotyping of bipolar disorder: A systematic review*. Journal of Affective Disorders, 2021. DOI: 10.1016/j.jad.2021.08.052.
@@ -48,4 +70,6 @@ Falsos alertas, estigma, exposição financeira, coerção por terceiros, baixa 
 - **R3:** World Health Organization. *Bipolar disorder*. https://www.who.int/news-room/fact-sheets/detail/bipolar-disorder.
 - **R4:** Flutter. *Build and release a web app*. https://docs.flutter.dev/deployment/web.
 - **R5:** GitHub. *Deploying your website automatically*. https://docs.github.com/en/get-started/start-your-journey/deploying-your-website-automatically.
-
+- **R6:** Nicholas et al. *Mobile App–Based Self-Report Questionnaires for Bipolar Disorder: Systematic Review*. JMIR, 2021. https://pmc.ncbi.nlm.nih.gov/articles/PMC7822726/.
+- **R7:** Duffy et al. *Patients’ adherence to smartphone apps in bipolar disorder: systematic review*. https://pmc.ncbi.nlm.nih.gov/articles/PMC8175501/.
+- **R8:** *Digital Markers for Passive Remote Monitoring of Bipolar Disorder: Systematic Review*. 2026. https://pmc.ncbi.nlm.nih.gov/articles/PMC13472530/.

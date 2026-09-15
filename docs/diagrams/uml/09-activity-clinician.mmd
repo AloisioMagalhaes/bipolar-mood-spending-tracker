@@ -1,0 +1,6 @@
+flowchart TD
+Start((Início)) --> Auth[Profissional autenticado]
+Auth --> Link[Vínculo autorizado]
+Link --> Timeline[Revisar autorrelatos]
+Timeline --> Context[Adicionar contexto clínico]
+Context --> End((Fim))
