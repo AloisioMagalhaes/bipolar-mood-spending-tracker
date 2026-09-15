@@ -53,17 +53,55 @@ Falsos alertas, estigma, exposição financeira, coerção por terceiros, baixa 
 
 ## 8. Métricas e pesquisa
 
-Medir conclusão, atividade, retenção 7/30/90 dias, tempo de registro, ausência, revogação, erros de sincronização, SUS/MAUQ e carga percebida. Não usar acurácia preditiva no MVP. Revisões recomendam definições replicáveis, seguimento longo, validação externa e modelagem explícita de ausência [R6–R8].
+Medir conclusão, atividade, retenção 7/30/90 dias, tempo de registro, ausência,
+revogação, erros de sincronização, SUS/MAUQ e carga percebida. Adesão deve ser
+definida como eventos elegíveis concluídos dividido por eventos esperados,
+reportando também abandono e dados ausentes separadamente. Essa separação é
+necessária porque revisões encontraram definições heterogêneas e relato
+incompleto de adesão e abandono [R6, R7, R9].
+
+O estudo de produto deve distinguir as seguintes etapas:
+
+| Etapa | Objetivo | Evidência exigida | Não permite concluir |
+|---|---|---|---|
+| Usabilidade | identificar barreiras, carga e compreensão | tarefa, tempo, erro, SUS/MAUQ e feedback qualitativo | eficácia clínica |
+| Viabilidade | verificar adesão, retenção, segurança operacional e completude | protocolo prévio, métricas e limitações | prevenção de recaída ou diagnóstico |
+| Validade | comparar autorrelatos com instrumentos ou avaliações apropriadas | desenho comparativo e análise estatística definida antes | validade universal ou classificação automática |
+| Eficácia | estimar efeito clínico | estudo ético-aprovado, desfecho primário e comparador | usar resultados de outro aplicativo como prova do MoodLedger |
+
+Não usar acurácia preditiva no MVP. A literatura apresenta sinais promissores
+para monitoramento, mas também queda de adesão ao longo do tempo, amostras
+pequenas, heterogeneidade, viés de seleção e preocupação com privacidade
+[R6–R10]. Qualquer estudo do MoodLedger deve declarar população, período de
+seguimento, perdas, dados ausentes, instrumento, versão do aplicativo e plano
+de análise antes da coleta.
 
 ## 9. Priorização
 
 P0: qualquer falha de CI/segurança. P1: RF-08–RF-13 e persistência. P2: visualizações avançadas e sensores opt-in. P3: modelos preditivos somente após ética e validação externa.
 
-## 10. Baseline arquitetural visual
+## 10. Critérios de avaliação da evidência
+
+Cada referência usada para justificar requisito ou decisão deve ser registrada
+com: autores, ano, título, periódico, DOI/URL editorial, desenho, população,
+período de acompanhamento, desfechos, resultados relevantes, limitações, risco
+de viés e decisão de produto. Revisões sistemáticas devem informar estratégia
+de busca, data-limite e critérios de inclusão; estudos primários devem informar
+amostra, comparador quando houver e perdas de seguimento. A matriz em
+[`docs/evidence-matrix.md`](evidence-matrix.md) é o registro operacional dessa
+regra.
+
+Resultados de Scite e Consensus são instrumentos de descoberta e rastreabilidade;
+não substituem a leitura do artigo, a conferência do DOI ou a avaliação crítica.
+Um resultado só pode sustentar afirmação no artigo após conferência na fonte
+primária ou editorial. A seleção deve seguir pertinência e qualidade, e não
+apenas quantidade ou número de citações [R6, R9, R10].
+
+## 11. Baseline arquitetural visual
 
 Os 14 diagramas UML 2.x derivados do código-fonte estão em [`docs/diagrams/uml`](diagrams/uml/index.md); os níveis C4 estão em [`docs/diagrams/c4`](diagrams/c4). A atualização deve ocorrer no mesmo PR de qualquer mudança estrutural.
 
-## 7. Referências iniciais
+## 12. Referências iniciais
 
 - **R1:** Faurholt-Jepsen et al. *Portable technologies for digital phenotyping of bipolar disorder: A systematic review*. Journal of Affective Disorders, 2021. DOI: 10.1016/j.jad.2021.08.052.
 - **R2:** *Recommendations for Research and Clinical Implementation of Ambulatory Assessment...*. PubMed, 2026. https://pubmed.ncbi.nlm.nih.gov/42228842/.
@@ -73,3 +111,5 @@ Os 14 diagramas UML 2.x derivados do código-fonte estão em [`docs/diagrams/uml
 - **R6:** Nicholas et al. *Mobile App–Based Self-Report Questionnaires for Bipolar Disorder: Systematic Review*. JMIR, 2021. https://pmc.ncbi.nlm.nih.gov/articles/PMC7822726/.
 - **R7:** Duffy et al. *Patients’ adherence to smartphone apps in bipolar disorder: systematic review*. https://pmc.ncbi.nlm.nih.gov/articles/PMC8175501/.
 - **R8:** *Digital Markers for Passive Remote Monitoring of Bipolar Disorder: Systematic Review*. 2026. https://pmc.ncbi.nlm.nih.gov/articles/PMC13472530/.
+- **R9:** ORTIZ, A. et al. *Predictors of adherence to electronic self-monitoring in patients with bipolar disorder*. International Journal of Bipolar Disorders, 2023. Registro bibliográfico: https://consensus.app/papers/predictors-of-adherence-to-electronic-selfmonitoring-in-ortiz-park/dd9f8633ba6f5acf88c218baab54c3b3/.
+- **R10:** ASTILL WRIGHT, L. et al. *The User Experience of Ambulatory Assessment and Mood Monitoring in Bipolar Disorder*. Journal of Medical Internet Research, 2025. Registro bibliográfico: https://consensus.app/papers/details/0c81a7a6ed0c51178b4684c5c8e9c984/.
