@@ -1,0 +1,9 @@
+sequenceDiagram
+actor P as Paciente
+participant D as DashboardPage
+participant F as MoodDialog
+P->>D: tocar Registrar humor
+D->>F: abrir sliders
+P->>F: informar humor/energia/sono
+F-->>D: MoodEntry
+D-->>P: atualizar métricas

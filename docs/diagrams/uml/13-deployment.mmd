@@ -1,0 +1,7 @@
+flowchart LR
+Dev[GitHub push] --> CI[Actions]
+CI --> Web[Flutter Web build]
+CI --> APK[Android APK build]
+Web --> Pages[GitHub Pages]
+APK --> Release[GitHub Release artifact]
+CI --> Scan[OSV + Gitleaks]

@@ -1,0 +1,5 @@
+flowchart LR
+D[DashboardPage] -- 1 abre --> F[Dialog]
+F -- 2 retorna --> M[Entry model]
+D -- 3 persiste --> S[SharedPreferences]
+D -- 4 copia --> C[Flutter Clipboard]

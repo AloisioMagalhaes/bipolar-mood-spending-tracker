@@ -58,6 +58,10 @@ Medir conclusão, atividade, retenção 7/30/90 dias, tempo de registro, ausênc
 
 P0: qualquer falha de CI/segurança. P1: RF-08–RF-13 e persistência. P2: visualizações avançadas e sensores opt-in. P3: modelos preditivos somente após ética e validação externa.
 
+## 10. Baseline arquitetural visual
+
+Os 14 diagramas UML 2.x derivados do código-fonte estão em [`docs/diagrams/uml`](diagrams/uml/index.md); os níveis C4 estão em [`docs/diagrams/c4`](diagrams/c4). A atualização deve ocorrer no mesmo PR de qualquer mudança estrutural.
+
 ## 7. Referências iniciais
 
 - **R1:** Faurholt-Jepsen et al. *Portable technologies for digital phenotyping of bipolar disorder: A systematic review*. Journal of Affective Disorders, 2021. DOI: 10.1016/j.jad.2021.08.052.

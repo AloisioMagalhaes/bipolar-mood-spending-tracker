@@ -1,0 +1,8 @@
+classDiagram
+class MoodEntry {+int mood +int energy +int sleep +toJson()}
+class SpendingEntry {+DateTime date +double amount +String category +String motive +bool impulsive +toJson() +fromJson()}
+class MoodLedgerApp
+class DashboardPage
+MoodLedgerApp --> DashboardPage
+DashboardPage --> MoodEntry
+DashboardPage --> SpendingEntry
