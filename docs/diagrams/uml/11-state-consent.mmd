@@ -7,3 +7,6 @@ Active --> [*]
 state "Cada escopo independente" as Scoped
 Active --> Scoped
 Scoped --> Revoked: revogar somente uma finalidade
+Active --> Erased: excluir dados locais
+Revoked --> Erased: excluir dados locais
+Erased --> [*]
