@@ -49,6 +49,26 @@ Usar Material 3 nativo, toque primeiro, componentes pequenos `const`, `SafeArea`
 └──────────────┴──────────┘
 ```
 
+## Sketch 4 — estado vazio seguro
+
+```text
+┌─────────────────────────┐
+│ Seu acompanhamento      │
+│ ☁ Armazenamento local   │
+│                         │
+│ Ainda não há registros. │
+│ Eles aparecerão aqui.   │
+│                         │
+│ [Registrar humor]       │
+│ [Registrar compra]      │
+└─────────────────────────┘
+```
+
+O estado vazio é uma representação válida do domínio, não uma exceção. Ele
+preserva a hierarquia visual, oferece as ações primárias e não infere valores
+ausentes. Após exclusão local, o aplicativo deve permanecer navegável e
+explicar que os dados não foram sincronizados remotamente.
+
 ## Representação emocional
 
 O MVP usa escalas contínuas de humor/energia e linguagem do próprio paciente, inspiradas em estudos de EMA que usaram escalas visuais 0–100 [A1]. Emojis e cores serão complementares, nunca o único canal, pois podem carregar ambiguidades culturais e não devem rotular “fase bipolar”. O sistema exibirá “autorrelato” e “padrão para revisão”, não “mania/depressão”. Visualizações temporais favorecem comparação e autorreflexão [A2].
