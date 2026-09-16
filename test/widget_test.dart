@@ -59,4 +59,29 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('exclusão local remove registros e preserva estado navegável', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MoodLedgerApp());
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    expect(find.text('Excluir dados locais?'), findsOneWidget);
+    await tester.tap(find.text('Excluir'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ainda não há autorrelatos ou gastos.'), findsOneWidget);
+    expect(find.text('Dados locais excluídos.'), findsOneWidget);
+  });
+
+  testWidgets('vínculo exige consentimento específico', (tester) async {
+    await tester.pumpWidget(const MoodLedgerApp());
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(find.byIcon(Icons.people_outline));
+    await tester.pump();
+    expect(
+      find.text('Ative o consentimento de vínculo antes de continuar.'),
+      findsOneWidget,
+    );
+  });
 }
