@@ -2,6 +2,14 @@
 
 Status: arquitetura futura; não implementada no protótipo local.
 
+O contrato local em [`lib/local_authorization.dart`](../lib/local_authorization.dart)
+e seus testes cobrem apenas decisões de política em memória. Eles não
+autenticam pessoas, não protegem recursos remotos e não substituem RLS ou
+auditoria server-side. A implementação remota continua bloqueada pelas issues
+[#76](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/issues/76),
+[#77](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/issues/77)
+e [#78](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/issues/78).
+
 | Recurso | Paciente | Profissional vinculado | Administrador |
 |---|---|---|---|
 | próprios autorrelatos | ler/criar/excluir | ler somente com consentimento ativo | negar por padrão |
