@@ -90,6 +90,13 @@ um número universal de eficácia [1][2][3].
 Até a conclusão dos itens 1–3, esta issue permanece aberta e o MoodLedger não
 deve ser apresentado como validado clinicamente.
 
+As funções em [`lib/research_metrics.dart`](../lib/research_metrics.dart) e os
+testes correspondentes fornecem uma implementação determinística para ensaios
+com dados sintéticos. Elas calculam adesão, completude e retenção observadas;
+não imputam humor, não inferem fase bipolar e não representam evidência de
+eficácia. A separação entre essas métricas é coerente com a heterogeneidade de
+definições de adesão relatada nas revisões [1][2].
+
 ## Referências (ABNT)
 
 [1] FERNANDEZ, A. et al. Patients' adherence to smartphone apps in the
