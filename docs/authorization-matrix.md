@@ -10,6 +10,12 @@ auditoria server-side. A implementação remota continua bloqueada pelas issues
 [#77](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/issues/77)
 e [#78](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/issues/78).
 
+O contrato local de convite em [`lib/local_invitation.dart`](../lib/local_invitation.dart)
+agora demonstra aceite bilateral, expiração, uso único e revogação, coberto por
+testes unitários. Ele não associa identidades autenticadas nem libera
+compartilhamento remoto; esses controles continuam pertencendo ao backend
+previsto na issue #77.
+
 | Recurso | Paciente | Profissional vinculado | Administrador |
 |---|---|---|---|
 | próprios autorrelatos | ler/criar/excluir | ler somente com consentimento ativo | negar por padrão |
