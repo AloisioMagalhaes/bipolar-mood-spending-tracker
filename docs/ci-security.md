@@ -2,6 +2,21 @@
 
 O workflow executa análise Dart, CodeQL dos workflows GitHub Actions, testes com cobertura, build Web, OSV Scanner e Gitleaks em container. O APK Android é gerado apenas em tags SemVer pelo fluxo de release. O workflow Pages publica `build/web` com `base-href` compatível com o nome do repositório. Falhas de segurança bloqueiam a entrega. APKs são artefatos; assinatura de produção será configurada somente com segredo externo e processo de release aprovado. Qualquer falha no Actions é P0 até triagem, correção, reexecução e registro em issue/PR.
 
+## Revisão automática externa
+
+O workflow gerenciado **GitHub Advanced Security** não é versionado neste
+repositório. Se ele falhar por configuração de modelo, permissão ou serviço,
+isso deve ser tratado como P0 operacional e não como aprovação de segurança.
+No run de referência de 16 set. 2026, a etapa `Processing Request (Linux)`
+retornou `CAPIError: 400 The requested model is not supported` ao solicitar
+`claude-opus-5`; o incidente está rastreado na
+[issue #89](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/issues/89).
+O responsável pelo GitHub Advanced Security deve selecionar um modelo
+suportado, confirmar a associação/permissão do agente e reexecutar o run. Até
+essa evidência existir, a revisão por IA externa permanece inconclusiva; os
+checks versionados CodeQL, dependency-audit, Gitleaks e testes não são
+substituídos por ela.
+
 ## Promoção versionada
 
 Toda promoção de `develop` para `main` deve ser seguida por uma tag `vMAJOR.MINOR.PATCH` no mesmo commit de release. A tag dispara o build Web e Android, publica ambos como assets na GitHub Release e dispara a publicação do Web no GitHub Pages. A promoção não é considerada concluída enquanto a release e o Pages não estiverem verdes.
