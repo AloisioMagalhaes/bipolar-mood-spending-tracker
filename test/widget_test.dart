@@ -70,6 +70,11 @@ void main() {
     expect(find.text('Excluir dados locais?'), findsOneWidget);
     await tester.tap(find.text('Excluir'));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Ainda não há autorrelatos ou gastos.'),
+      300,
+      scrollable: find.byType(Scrollable),
+    );
     expect(find.text('Ainda não há autorrelatos ou gastos.'), findsOneWidget);
     expect(find.text('Dados locais excluídos.'), findsOneWidget);
   });
