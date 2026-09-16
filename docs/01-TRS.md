@@ -52,6 +52,11 @@ Falsos alertas, estigma, exposição financeira, coerção por terceiros, baixa 
 - RF-14: vínculo demonstrativo exige código e confirmação explícita; produção exige backend, expiração e auditoria server-side.
 - RF-15: quando não houver registros, exibir estado vazio orientativo com ações para registrar humor ou compra, sem acessar índice de lista inexistente.
 
+RF-14 e RNF-06 têm um gate de entrega: requisitos de backend, base legal,
+consentimento remoto e revisão ética são pré-condições, não evidência de que já
+foram aprovados. Enquanto o gate não estiver completo, a sincronização deve
+permanecer desativada [R11, R12].
+
 Implementação incremental da RF-03: a timeline do MVP oferece filtros locais por
 período (7/30 dias ou tudo), categoria e tipo (planejada/impulsiva). O resultado
 organiza autorrelatos e registros financeiros, mas não demonstra correlação
@@ -119,3 +124,5 @@ Os 14 diagramas UML 2.x derivados do código-fonte estão em [`docs/diagrams/uml
 - **R8:** *Digital Markers for Passive Remote Monitoring of Bipolar Disorder: Systematic Review*. 2026. https://pmc.ncbi.nlm.nih.gov/articles/PMC13472530/.
 - **R9:** ORTIZ, A. et al. *Predictors of adherence to electronic self-monitoring in patients with bipolar disorder*. International Journal of Bipolar Disorders, 2023. Registro bibliográfico: https://consensus.app/papers/predictors-of-adherence-to-electronic-selfmonitoring-in-ortiz-park/dd9f8633ba6f5acf88c218baab54c3b3/.
 - **R10:** ASTILL WRIGHT, L. et al. *The User Experience of Ambulatory Assessment and Mood Monitoring in Bipolar Disorder*. Journal of Medical Internet Research, 2025. Registro bibliográfico: https://consensus.app/papers/details/0c81a7a6ed0c51178b4684c5c8e9c984/.
+- **R11:** NATIONAL INSTITUTE OF STANDARDS AND TECHNOLOGY. *Zero Trust Architecture*. NIST SP 800-207. 2020. Disponível em: https://doi.org/10.6028/NIST.SP.800-207.
+- **R12:** OWASP FOUNDATION. *Application Security Verification Standard 4.0.3*. 2021. Disponível em: https://owasp.org/www-project-application-security-verification-standard/.

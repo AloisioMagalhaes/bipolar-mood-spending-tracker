@@ -38,6 +38,29 @@ sessões e consentimentos imediatamente. Essas decisões seguem NIST SP 800-207
 - Segredos não entram no repositório; CI bloqueia vazamentos.
 - Threat model é revisado a cada mudança de fronteira, modelo ou dependência.
 
+## Gate obrigatório antes de sincronização
+
+A sincronização remota permanece desabilitada no protótipo. A implementação
+futura só poderá avançar após evidência versionada de: (1) threat model
+aprovado e revisado; (2) definição formal de controlador, operador, finalidade,
+retenção e base legal pela governança responsável; (3) consentimento granular,
+explícito, revogável e auditável; (4) revisão ética aplicável; (5) testes
+positivos e negativos de isolamento por recurso; e (6) revisão de segurança do
+backend e das políticas RLS. Requisitos documentados não equivalem a aprovação
+formal. Até que todos os artefatos existam, o cliente deve operar somente com
+dados locais e sem alegação de proteção remota.
+
+### Matriz de prontidão
+
+| Gate | Evidência mínima | Estado |
+|---|---|---|
+| Threat model | modelo atualizado, cenários e mitigação revisados | especificado, não aprovado |
+| LGPD | papéis, finalidade, retenção e base legal formalizados | pendente |
+| Consentimento | escopo, revogação e auditoria testados | local; remoto pendente |
+| Ética | protocolo e revisão ética aplicável | pendente |
+| Backend | autenticação, autorização por recurso, RLS e auditoria | não implementado |
+| Sincronização | testes de integração e segurança aprovados | bloqueada |
+
 ## Referências (ABNT)
 
 [1] NATIONAL INSTITUTE OF STANDARDS AND TECHNOLOGY. *Zero Trust Architecture*.
