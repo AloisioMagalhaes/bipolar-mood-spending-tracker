@@ -63,7 +63,7 @@ O MVP usa escalas contínuas de humor/energia e linguagem do próprio paciente, 
 
 Nenhum vínculo deve ser criado unilateralmente sem aceite do outro lado.
 
-Implementação atual: `LinkDialog` aceita um código informado pelo paciente e exige confirmação explícita antes de criar `ProfessionalLink`; “Revogar” remove o vínculo da sessão. Persistência remota, expiração criptográfica e auditoria server-side permanecem pendentes da issue #12.
+Implementação atual: `LinkDialog` aceita um código informado pelo paciente e exige confirmação explícita antes de criar `ProfessionalLink`; “Revogar” remove o vínculo da sessão. Gastos, autorrelatos e auditoria local são persistidos no Android; o Web mantém o protótipo sem persistência clínica. O campo de sono aceita “não informado” explicitamente. Persistência remota, expiração criptográfica e auditoria server-side permanecem pendentes da issue #58.
 
 ## Referências
 

@@ -27,10 +27,20 @@ void main() {
 
   testWidgets('dashboard acessível e visualização reduzida', (tester) async {
     await tester.pumpWidget(const MoodLedgerApp());
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.scrollUntilVisible(
+      find.text('Resumo visual'),
+      300,
+      scrollable: find.byType(Scrollable),
+    );
     expect(find.text('Resumo visual'), findsOneWidget);
     expect(find.text('Humor autorrelatado'), findsOneWidget);
     final toggle = find.text('Reduzir animações');
+    await tester.scrollUntilVisible(
+      toggle,
+      300,
+      scrollable: find.byType(Scrollable),
+    );
     expect(toggle, findsOneWidget);
     await tester.tap(toggle);
     await tester.pump();
@@ -41,7 +51,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(const MoodLedgerApp());
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 1));
     await tester.tap(find.byIcon(Icons.download));
     await tester.pump();
     expect(
