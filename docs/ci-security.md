@@ -4,7 +4,7 @@ O workflow executa análise Dart, testes com cobertura, build Web, OSV Scanner e
 
 ## Promoção versionada
 
-Toda promoção de `develop` para `main` deve ser seguida por uma tag `vMAJOR.MINOR.PATCH` no mesmo commit de release. A tag dispara o build Web e Android, publica ambos como assets na GitHub Release e dispara a publicação do Web no GitHub Pages. A promoção não é considerada concluída enquanto a release e o Pages não estiverem verdes.
+Toda promoção de `develop` para `main` deve ser seguida por uma tag `vMAJOR.MINOR.PATCH` no mesmo commit de release. A tag dispara o build Web e Android e publica ambos como assets na GitHub Release. O Pages é disparado pelo push do mesmo commit em `main`, pois o ambiente protegido aceita a branch de produção; assim o conteúdo publicado é idêntico ao commit versionado. A promoção não é considerada concluída enquanto a release e o Pages não estiverem verdes.
 
 Prompt operacional: “Verifique issue, critérios, conflitos, Sourcery (`Issue`, `Triggers`, `Suggested fix`), testes, segurança e documentação; implemente em branch Gitflow, use Conventional Commits, abra PR, aguarde checks verdes, faça merge autorizado e somente então crie a tag SemVer. Em qualquer falha, pare a promoção, registre evidência e corrija antes de prosseguir.”
 
