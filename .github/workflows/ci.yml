@@ -11,19 +11,40 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: subosito/flutter-action@v2
         with: {channel: stable}
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test --coverage
-      - run: flutter build web --release
+      - name: Detect artifact-impacting changes
+        id: scope
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            changed=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+          elif [[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF_TYPE" == "branch" ]]; then
+            changed=$(git diff --name-only "$GITHUB_EVENT_BEFORE" "$GITHUB_SHA")
+          else
+            changed="force-build"
+          fi
+          if printf '%s\n' "$changed" | grep -Eq '^(lib/|web/|pubspec\.yaml$|pubspec\.lock$|\.github/workflows/(ci|pages)\.yml$)'; then
+            echo "build_web=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "build_web=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build Web artifact
+        if: steps.scope.outputs.build_web == 'true'
+        run: flutter build web --release
       - uses: actions/upload-artifact@v4
         with:
           name: flutter-artifacts
           path: |
-            build/web
             coverage/lcov.info
+            build/web
+          if-no-files-found: warn
   dependency-audit:
     runs-on: ubuntu-latest
     steps:

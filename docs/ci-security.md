@@ -2,6 +2,15 @@
 
 O workflow executa análise Dart, CodeQL dos workflows GitHub Actions, testes com cobertura, build Web, OSV Scanner e Gitleaks em container. O APK Android é gerado apenas em tags SemVer pelo fluxo de release. O workflow Pages publica `build/web` com `base-href` compatível com o nome do repositório. Falhas de segurança bloqueiam a entrega. APKs são artefatos; assinatura de produção será configurada somente com segredo externo e processo de release aprovado. Qualquer falha no Actions é P0 até triagem, correção, reexecução e registro em issue/PR.
 
+## Escopo de artefatos
+
+O job `verify` sempre executa análise e testes, mas detecta mudanças em `lib/`,
+`web/`, manifests/dependências e workflows de publicação antes de gerar o
+artefato Web. Alterações exclusivamente documentais não repetem o build Web.
+O APK e a GitHub Release continuam restritos a tags SemVer; o Pages só é
+publicado a partir de `main`. Essa otimização reduz trabalho sem ocultar falhas
+de análise ou testes.
+
 ## Promoção versionada
 
 Toda promoção de `develop` para `main` deve ser seguida por uma tag `vMAJOR.MINOR.PATCH` no mesmo commit de release. A tag dispara o build Web e Android, publica ambos como assets na GitHub Release e dispara a publicação do Web no GitHub Pages. A promoção não é considerada concluída enquanto a release e o Pages não estiverem verdes.
