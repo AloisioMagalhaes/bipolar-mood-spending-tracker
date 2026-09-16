@@ -115,6 +115,7 @@ class _DashboardPageState extends State<DashboardPage> {
   bool reduceMotion = false;
   bool reviewSignalEnabled = false;
   final _stateReady = Completer<void>();
+  MoodEntry? get latestMood => moods.isEmpty ? null : moods.first;
   @override
   void initState() {
     super.initState();
@@ -225,13 +226,13 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  List<String> get _reviewSignals => reviewSignalEnabled
+  List<String> get _reviewSignals => reviewSignalEnabled && latestMood != null
       ? [
-          if (moods.first.irritability >= 7)
+          if (latestMood!.irritability >= 7)
             'Irritabilidade autorrelatada elevada para revisão',
-          if (moods.first.impulsivity >= 7)
+          if (latestMood!.impulsivity >= 7)
             'Impulsividade autorrelatada elevada para revisão',
-          if (moods.first.sleep <= 4)
+          if (latestMood!.sleep <= 4)
             'Sono autorrelatado reduzido para revisão',
         ]
       : const [];
@@ -437,33 +438,66 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
             const SizedBox(height: 24),
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                MetricCard(
-                  label: 'Humor recente',
-                  value: '${moods.first.mood}/10',
-                  icon: Icons.mood,
+            if (latestMood != null)
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  MetricCard(
+                    label: 'Humor recente',
+                    value: '${moods.first.mood}/10',
+                    icon: Icons.mood,
+                  ),
+                  MetricCard(
+                    label: 'Energia recente',
+                    value: '${moods.first.energy}/10',
+                    icon: Icons.bolt,
+                  ),
+                  MetricCard(
+                    label: 'Sono recente',
+                    value: '${moods.first.sleep}h',
+                    icon: Icons.bedtime,
+                  ),
+                  MetricCard(
+                    label: 'Gastos registrados',
+                    value:
+                        'R\$ ${spending.fold<double>(0, (s, e) => s + e.amount).toStringAsFixed(2)}',
+                    icon: Icons.payments,
+                  ),
+                ],
+              ),
+            if (latestMood == null)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Ainda não há autorrelatos ou gastos.'),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Seus registros aparecerão aqui e permanecerão neste dispositivo.',
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: addMood,
+                            icon: const Icon(Icons.mood),
+                            label: const Text('Registrar humor'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: addSpending,
+                            icon: const Icon(Icons.add),
+                            label: const Text('Registrar compra'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                MetricCard(
-                  label: 'Energia recente',
-                  value: '${moods.first.energy}/10',
-                  icon: Icons.bolt,
-                ),
-                MetricCard(
-                  label: 'Sono recente',
-                  value: '${moods.first.sleep}h',
-                  icon: Icons.bedtime,
-                ),
-                MetricCard(
-                  label: 'Gastos registrados',
-                  value:
-                      'R\$ ${spending.fold<double>(0, (s, e) => s + e.amount).toStringAsFixed(2)}',
-                  icon: Icons.payments,
-                ),
-              ],
-            ),
+              ),
             const SizedBox(height: 20),
             Card(
               child: Column(
@@ -492,18 +526,20 @@ class _DashboardPageState extends State<DashboardPage> {
               'Resumo visual',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            TrendBar(
-              label: 'Humor autorrelatado',
-              value: moods.first.mood / 10,
-              color: Colors.indigo,
-              animate: !reduceMotion,
-            ),
-            TrendBar(
-              label: 'Energia autorrelatada',
-              value: moods.first.energy / 10,
-              color: Colors.deepOrange.shade700,
-              animate: !reduceMotion,
-            ),
+            if (latestMood != null)
+              TrendBar(
+                label: 'Humor autorrelatado',
+                value: latestMood!.mood / 10,
+                color: Colors.indigo,
+                animate: !reduceMotion,
+              ),
+            if (latestMood != null)
+              TrendBar(
+                label: 'Energia autorrelatada',
+                value: latestMood!.energy / 10,
+                color: Colors.deepOrange.shade700,
+                animate: !reduceMotion,
+              ),
             if (_reviewSignals.isNotEmpty)
               Card(
                 child: ListTile(
@@ -513,30 +549,31 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
             const SizedBox(height: 20),
-            Card(
-              child: Column(
-                children: [
-                  const ListTile(
-                    title: Text('Consentimentos'),
-                    subtitle: Text(
-                      'Cada finalidade pode ser revogada separadamente.',
+            if (latestMood != null)
+              Card(
+                child: Column(
+                  children: [
+                    const ListTile(
+                      title: Text('Consentimentos'),
+                      subtitle: Text(
+                        'Cada finalidade pode ser revogada separadamente.',
+                      ),
                     ),
-                  ),
-                  ...{
-                    'mood': 'Autorrelatos',
-                    'spending': 'Gastos',
-                    'link': 'Vínculo profissional',
-                    'export': 'Exportação JSON',
-                  }.entries.map(
-                    (e) => SwitchListTile(
-                      title: Text(e.value),
-                      value: consent[e.key]!,
-                      onChanged: (v) => _setConsent(e.key, v),
+                    ...{
+                      'mood': 'Autorrelatos',
+                      'spending': 'Gastos',
+                      'link': 'Vínculo profissional',
+                      'export': 'Exportação JSON',
+                    }.entries.map(
+                      (e) => SwitchListTile(
+                        title: Text(e.value),
+                        value: consent[e.key]!,
+                        onChanged: (v) => _setConsent(e.key, v),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             if (professionalLink != null)
               Card(
                 child: ListTile(
@@ -561,14 +598,19 @@ class _DashboardPageState extends State<DashboardPage> {
               child: ListTile(
                 leading: const CircleAvatar(child: Icon(Icons.mood)),
                 title: Text(
-                  'Humor ${moods.first.mood}/10 · energia ${moods.first.energy}/10',
+                  'Humor ${latestMood!.mood}/10 · energia ${latestMood!.energy}/10',
                 ),
                 subtitle: Text(
-                  'Sono: ${moods.first.sleep}h · irritabilidade ${moods.first.irritability}/10 · impulsividade ${moods.first.impulsivity}/10 · autorrelato',
+                  'Sono: ${latestMood!.sleep}h · irritabilidade ${latestMood!.irritability}/10 · impulsividade ${latestMood!.impulsivity}/10 · autorrelato',
                 ),
                 trailing: const Text('hoje'),
               ),
             ),
+            if (spending.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Text('Nenhuma compra registrada.'),
+              ),
             ...spending.map(
               (e) => Card(
                 child: ListTile(

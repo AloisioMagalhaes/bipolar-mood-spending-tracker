@@ -50,6 +50,7 @@ Falsos alertas, estigma, exposição financeira, coerção por terceiros, baixa 
 - RF-12: exportação produz dados legíveis pelo paciente e profissional.
 - RF-13: padrões são rotulados como autorrelato/tendência para revisão, nunca como fase bipolar.
 - RF-14: vínculo demonstrativo exige código e confirmação explícita; produção exige backend, expiração e auditoria server-side.
+- RF-15: quando não houver registros, exibir estado vazio orientativo com ações para registrar humor ou compra, sem acessar índice de lista inexistente.
 
 ## 8. Métricas e pesquisa
 
@@ -78,7 +79,7 @@ de análise antes da coleta.
 
 ## 9. Priorização
 
-P0: qualquer falha de CI/segurança. P1: RF-08–RF-13 e persistência. P2: visualizações avançadas e sensores opt-in. P3: modelos preditivos somente após ética e validação externa.
+P0: qualquer falha de CI/segurança. P1: RF-08–RF-15 e persistência. P2: visualizações avançadas e sensores opt-in. P3: modelos preditivos somente após ética e validação externa.
 
 ## 10. Critérios de avaliação da evidência
 
