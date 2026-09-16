@@ -116,6 +116,20 @@ período (7/30 dias ou tudo), categoria e tipo (planejada/impulsiva). O resultad
 organiza autorrelatos e registros financeiros, mas não demonstra correlação
 causal nem classificação clínica [R6, R10].
 
+## 7.2 Governança LGPD aplicada ao produto
+
+Registros de humor e dados relacionados ao acompanhamento podem ser dados
+pessoais sensíveis quando vinculados a uma pessoa. A ANPD diferencia titular,
+controlador, operador e encarregado; esses papéis devem ser nomeados por
+decisão formal da organização responsável, não inferidos pelo aplicativo
+[R17, R18].
+
+Antes de sincronizar, uma matriz aprovada deve associar cada campo a finalidade,
+base legal, destinatário, retenção, descarte e canal de exercício de direitos.
+Também deve ser avaliada a necessidade de Relatório de Impacto à Proteção de
+Dados quando o tratamento apresentar alto risco [R19]. Esta seção é requisito
+de planejamento e não constitui parecer jurídico ou aprovação da base legal.
+
 ## 8. Métricas e pesquisa
 
 Medir conclusão, atividade, retenção 7/30/90 dias, tempo de registro, ausência,
@@ -184,3 +198,6 @@ Os 14 diagramas UML 2.x derivados do código-fonte estão em [`docs/diagrams/uml
 - **R16:** RYAN, K. et al. *A Smartphone App to Monitor Mood Symptoms in Bipolar Disorder: Development and Usability Study*. JMIR mHealth and uHealth, 2020. Disponível em: https://pmc.ncbi.nlm.nih.gov/articles/PMC7539167/.
 - **R11:** NATIONAL INSTITUTE OF STANDARDS AND TECHNOLOGY. *Zero Trust Architecture*. NIST SP 800-207. 2020. Disponível em: https://doi.org/10.6028/NIST.SP.800-207.
 - **R12:** OWASP FOUNDATION. *Application Security Verification Standard 4.0.3*. 2021. Disponível em: https://owasp.org/www-project-application-security-verification-standard/.
+- **R17:** BRASIL. Autoridade Nacional de Proteção de Dados. *Titular de Dados*. Disponível em: https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados. Acesso em: 16 set. 2026.
+- **R18:** BRASIL. Autoridade Nacional de Proteção de Dados. *Denúncia/Petição de Titular referente à LGPD*. Disponível em: https://www.gov.br/anpd/pt-br/canais_atendimento/cidadao-titular-de-dados/denuncia-peticao-de-titular-referente-lgpd. Acesso em: 16 set. 2026.
+- **R19:** BRASIL. Autoridade Nacional de Proteção de Dados. *Relatório de Impacto à Proteção de Dados Pessoais (RIPD)*. Disponível em: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/relatorio-de-impacto-a-protecao-de-dados-pessoais-ripd. Acesso em: 16 set. 2026.
