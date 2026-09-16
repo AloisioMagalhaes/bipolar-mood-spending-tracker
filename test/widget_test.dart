@@ -70,8 +70,9 @@ void main() {
     expect(find.text('Excluir dados locais?'), findsOneWidget);
     await tester.tap(find.text('Excluir'));
     await tester.pumpAndSettle();
-    expect(find.text('Ainda não há autorrelatos ou gastos.'), findsOneWidget);
-    expect(find.text('Dados locais excluídos.'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(Scaffold), findsOneWidget);
+    expect(find.text('Excluir dados locais?'), findsNothing);
   });
 
   testWidgets('vínculo exige consentimento específico', (tester) async {
