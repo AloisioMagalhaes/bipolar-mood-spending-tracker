@@ -52,6 +52,11 @@ Falsos alertas, estigma, exposição financeira, coerção por terceiros, baixa 
 - RF-14: vínculo demonstrativo exige código e confirmação explícita; produção exige backend, expiração e auditoria server-side.
 - RF-15: quando não houver registros, exibir estado vazio orientativo com ações para registrar humor ou compra, sem acessar índice de lista inexistente.
 
+Implementação incremental da RF-03: a timeline do MVP oferece filtros locais por
+período (7/30 dias ou tudo), categoria e tipo (planejada/impulsiva). O resultado
+organiza autorrelatos e registros financeiros, mas não demonstra correlação
+causal nem classificação clínica [R6, R10].
+
 ## 8. Métricas e pesquisa
 
 Medir conclusão, atividade, retenção 7/30/90 dias, tempo de registro, ausência,

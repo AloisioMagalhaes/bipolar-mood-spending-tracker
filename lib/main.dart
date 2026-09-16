@@ -46,10 +46,12 @@ class MoodEntry {
     this.impulsivity = 0,
     this.medicationTaken = false,
     this.missingReason,
+    this.date,
   });
   final int mood, energy, sleep, irritability, impulsivity;
   final bool medicationTaken;
   final String? missingReason;
+  final DateTime? date;
   Map<String, dynamic> toJson() => {
     'mood': mood,
     'energy': energy,
@@ -58,6 +60,7 @@ class MoodEntry {
     'impulsivity': impulsivity,
     'medicationTaken': medicationTaken,
     if (missingReason != null) 'missingReason': missingReason,
+    if (date != null) 'date': date!.toIso8601String(),
   };
   factory MoodEntry.fromJson(Map<String, dynamic> json) => MoodEntry(
     mood: (json['mood'] as num).toInt(),
@@ -67,6 +70,9 @@ class MoodEntry {
     impulsivity: (json['impulsivity'] as num?)?.toInt() ?? 0,
     medicationTaken: json['medicationTaken'] as bool? ?? false,
     missingReason: json['missingReason'] as String?,
+    date: json['date'] == null
+        ? null
+        : DateTime.tryParse(json['date'] as String),
   );
 }
 
@@ -114,6 +120,9 @@ class _DashboardPageState extends State<DashboardPage> {
   final audit = <AuditEvent>[];
   bool reduceMotion = false;
   bool reviewSignalEnabled = false;
+  String timelinePeriod = 'Tudo';
+  String timelineCategory = 'Todas';
+  String timelineType = 'Todos';
   final _stateReady = Completer<void>();
   MoodEntry? get latestMood => moods.isEmpty ? null : moods.first;
   @override
@@ -236,6 +245,24 @@ class _DashboardPageState extends State<DashboardPage> {
             'Sono autorrelatado reduzido para revisão',
         ]
       : const [];
+
+  List<SpendingEntry> get _filteredSpending {
+    final cutoff = timelinePeriod == '30 dias'
+        ? DateTime.now().subtract(const Duration(days: 30))
+        : timelinePeriod == '7 dias'
+        ? DateTime.now().subtract(const Duration(days: 7))
+        : null;
+    return spending.where((entry) {
+      final matchesPeriod = cutoff == null || !entry.date.isBefore(cutoff);
+      final matchesCategory =
+          timelineCategory == 'Todas' || entry.category == timelineCategory;
+      final matchesType =
+          timelineType == 'Todos' ||
+          (timelineType == 'Impulsiva' && entry.impulsive) ||
+          (timelineType == 'Planejada' && !entry.impulsive);
+      return matchesPeriod && matchesCategory && matchesType;
+    }).toList();
+  }
 
   Future<void> _exportData() async {
     if (!consent['export']!) {
@@ -594,24 +621,65 @@ class _DashboardPageState extends State<DashboardPage> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const Text('Eventos próximos no tempo não provam causalidade.'),
-            Card(
-              child: ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.mood)),
-                title: Text(
-                  'Humor ${latestMood!.mood}/10 · energia ${latestMood!.energy}/10',
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                DropdownButton<String>(
+                  value: timelinePeriod,
+                  items: ['Tudo', '7 dias', '30 dias']
+                      .map(
+                        (v) => DropdownMenuItem(
+                          value: v,
+                          child: Text('Período: $v'),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => timelinePeriod = v!),
                 ),
-                subtitle: Text(
-                  'Sono: ${latestMood!.sleep}h · irritabilidade ${latestMood!.irritability}/10 · impulsividade ${latestMood!.impulsivity}/10 · autorrelato',
+                DropdownButton<String>(
+                  value: timelineCategory,
+                  items: ['Todas', ...spending.map((e) => e.category).toSet()]
+                      .map(
+                        (v) => DropdownMenuItem(
+                          value: v,
+                          child: Text('Categoria: $v'),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => timelineCategory = v!),
                 ),
-                trailing: const Text('hoje'),
-              ),
+                DropdownButton<String>(
+                  value: timelineType,
+                  items: ['Todos', 'Planejada', 'Impulsiva']
+                      .map(
+                        (v) =>
+                            DropdownMenuItem(value: v, child: Text('Tipo: $v')),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => timelineType = v!),
+                ),
+              ],
             ),
-            if (spending.isEmpty)
+            if (latestMood != null)
+              Card(
+                child: ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.mood)),
+                  title: Text(
+                    'Humor ${latestMood!.mood}/10 · energia ${latestMood!.energy}/10',
+                  ),
+                  subtitle: Text(
+                    'Sono: ${latestMood!.sleep}h · irritabilidade ${latestMood!.irritability}/10 · impulsividade ${latestMood!.impulsivity}/10 · autorrelato',
+                  ),
+                  trailing: const Text('hoje'),
+                ),
+              ),
+            if (_filteredSpending.isEmpty)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Text('Nenhuma compra registrada.'),
               ),
-            ...spending.map(
+            ..._filteredSpending.map(
               (e) => Card(
                 child: ListTile(
                   leading: CircleAvatar(

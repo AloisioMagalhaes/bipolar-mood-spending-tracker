@@ -1,6 +1,12 @@
 # CI, segurança e publicação
 
-O workflow executa análise Dart, testes com cobertura, build Web, APK debug/release, OSV Scanner e Gitleaks em container. O workflow Pages publica `build/web` com `base-href` compatível com o nome do repositório. Falhas de segurança bloqueiam a entrega. APKs são artefatos; assinatura de produção será configurada somente com segredo externo e processo de release aprovado. Qualquer falha no Actions é P0 até triagem, correção, reexecução e registro em issue/PR.
+O workflow executa análise Dart, testes com cobertura, build Web, OSV Scanner e Gitleaks em container. O APK Android é gerado apenas em tags SemVer pelo fluxo de release. O workflow Pages publica `build/web` com `base-href` compatível com o nome do repositório. Falhas de segurança bloqueiam a entrega. APKs são artefatos; assinatura de produção será configurada somente com segredo externo e processo de release aprovado. Qualquer falha no Actions é P0 até triagem, correção, reexecução e registro em issue/PR.
+
+## Promoção versionada
+
+Toda promoção de `develop` para `main` deve ser seguida por uma tag `vMAJOR.MINOR.PATCH` no mesmo commit de release. A tag dispara o build Web e Android, publica ambos como assets na GitHub Release e dispara a publicação do Web no GitHub Pages. A promoção não é considerada concluída enquanto a release e o Pages não estiverem verdes.
+
+Prompt operacional: “Verifique issue, critérios, conflitos, Sourcery (`Issue`, `Triggers`, `Suggested fix`), testes, segurança e documentação; implemente em branch Gitflow, use Conventional Commits, abra PR, aguarde checks verdes, faça merge autorizado e somente então crie a tag SemVer. Em qualquer falha, pare a promoção, registre evidência e corrija antes de prosseguir.”
 
 ## Proteção de `main`
 
