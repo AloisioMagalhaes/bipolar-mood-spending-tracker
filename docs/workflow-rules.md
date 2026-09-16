@@ -13,6 +13,15 @@ conflitos e todos os checks obrigatórios estiverem verdes. PRs de forks são
 excluídos da automação por segurança. Falhas, conflitos, revisão Sourcery
 acionável ou checks pendentes continuam bloqueando a promoção.
 
+## Rastreabilidade repository-wide
+
+Antes de criar uma issue, pesquisar o repositório inteiro e registrar impacto
+em código Dart/Flutter, testes, Markdown, diagramas Mermaid C4/UML 2.x, CI/CD,
+releases e deployments. Todo PR deve atualizar os artefatos afetados no mesmo
+changeset ou justificar por que não se aplicam. O PR deve ligar issue,
+critérios, Conventional Commit, checks, revisão Sourcery e evidências. A regra
+vale também para correções de workflow e mudanças exclusivamente documentais.
+
 ## Code Scanning
 
 O workflow oficial do CodeQL executa a análise `security-and-quality` da
