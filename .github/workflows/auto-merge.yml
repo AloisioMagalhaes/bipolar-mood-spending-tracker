@@ -14,8 +14,29 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      - name: Request native GitHub auto-merge
+      - name: Wait for required checks before merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --auto --merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=("verify" "dependency-audit" "Analyze GitHub Actions workflows")
+          for attempt in {1..60}; do
+            checks="$(gh pr checks "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json name,state)"
+            failed=0
+            pending=0
+            for name in "${required[@]}"; do
+              state="$(jq -r --arg name "$name" '.[] | select(.name == $name) | .state' <<<"$checks" | tail -n 1)"
+              if [[ "$state" == "FAILURE" || "$state" == "ERROR" || "$state" == "CANCELLED" ]]; then failed=1; fi
+              if [[ "$state" != "SUCCESS" ]]; then pending=1; fi
+            done
+            (( failed == 1 )) && { echo "Required check failed" >&2; exit 1; }
+            if (( pending == 0 )); then
+              gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --merge --delete-branch
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Timed out waiting for required checks" >&2
+          exit 1

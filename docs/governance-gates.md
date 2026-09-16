@@ -29,3 +29,8 @@ O resultado esperado no protótipo é `no backend/synchronization change
 detected`. Esta barreira reduz o risco de uma futura implementação ativar
 sincronização sem autorização documentada; não substitui revisão especializada
 nem revisão ética.
+
+O workflow de auto-merge também aguarda explicitamente `verify`,
+`dependency-audit` e CodeQL em `SUCCESS`; uma execução em andamento não é
+tratada como aprovação. O incidente que motivou essa proteção está registrado
+na [issue #84](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/issues/84).
