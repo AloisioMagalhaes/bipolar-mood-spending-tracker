@@ -34,3 +34,7 @@ O workflow de auto-merge também aguarda explicitamente `verify`,
 `dependency-audit` e CodeQL em `SUCCESS`; uma execução em andamento não é
 tratada como aprovação. O incidente que motivou essa proteção está registrado
 na [issue #84](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/issues/84).
+
+Após a proteção de `develop`, a validação operacional deve ocorrer em um PR
+subsequente com todos os checks obrigatórios concluídos antes do merge.
+
