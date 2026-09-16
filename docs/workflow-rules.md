@@ -16,7 +16,8 @@ acionável ou checks pendentes continuam bloqueando a promoção.
 ## Code Scanning
 
 O workflow oficial do CodeQL executa a análise `security-and-quality` da
-superfície JavaScript/Web em pull requests, pushes de `main`/`develop` e
+workflows do GitHub Actions em pull requests, pushes de `main`/`develop` e
 semanalmente. Alertas devem ser tratados como P0 antes de qualquer promoção.
 Essa análise é complementar a `flutter analyze`, testes, OSV Scanner, Gitleaks
-e revisão do threat model; não representa cobertura completa do código Dart.
+e revisão do threat model; a análise é complementar e não representa cobertura
+completa do código Dart.

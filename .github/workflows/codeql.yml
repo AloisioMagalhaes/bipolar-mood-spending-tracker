@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   analyze:
-    name: Analyze JavaScript web surface
+    name: Analyze GitHub Actions workflows
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,9 +26,9 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript
+          languages: actions
           queries: security-and-quality
       - name: Analyze
         uses: github/codeql-action/analyze@v3
         with:
-          category: /language:javascript
+          category: /language:actions
