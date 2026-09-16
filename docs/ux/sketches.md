@@ -69,6 +69,23 @@ preserva a hierarquia visual, oferece as ações primárias e não infere valore
 ausentes. Após exclusão local, o aplicativo deve permanecer navegável e
 explicar que os dados não foram sincronizados remotamente.
 
+## Sketch 5 — timeline filtrável
+
+```text
+┌─────────────────────────┐
+│ Linha do tempo           │
+│ [Período: Tudo      ▼]   │
+│ [Categoria: Todas   ▼]   │
+│ [Tipo: Todos         ▼]   │
+│ Humor 6/10 · energia 7   │
+│ Alimentação · R$ 89,90   │
+│ Nenhum resultado?        │
+└─────────────────────────┘
+```
+
+Os filtros apoiam a leitura longitudinal e mantêm o aviso de que proximidade
+temporal não demonstra causalidade [A2].
+
 ## Representação emocional
 
 O MVP usa escalas contínuas de humor/energia e linguagem do próprio paciente, inspiradas em estudos de EMA que usaram escalas visuais 0–100 [A1]. Emojis e cores serão complementares, nunca o único canal, pois podem carregar ambiguidades culturais e não devem rotular “fase bipolar”. O sistema exibirá “autorrelato” e “padrão para revisão”, não “mania/depressão”. Visualizações temporais favorecem comparação e autorreflexão [A2].
