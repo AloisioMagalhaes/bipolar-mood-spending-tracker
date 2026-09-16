@@ -10,9 +10,10 @@ Decisões de requisitos, limites clínicos, métricas e referências: [docs/01-T
 
 ## Capacidades implementadas
 
-- Registro de gastos, motivos e indicadores subjetivos de humor, energia, pensamentos, impulsividade e sono.
+- Registro de gastos, motivos e indicadores subjetivos de humor, energia, irritabilidade, impulsividade, sono e medicação autorrelatada.
+- Sinal configurável exclusivamente para revisão e pacote de exportação versionado com eventos de auditoria locais; não é diagnóstico nem alerta clínico.
 - Resumo visual com rótulos numéricos, `Semantics`, contraste redundante e redução de animações.
-- Persistência local Android tolerante a JSON inválido e exportação JSON para clipboard.
+- Persistência local Android tolerante a JSON inválido para gastos e autorrelatos, com exportação JSON versionada para clipboard.
 - Vínculo demonstrativo profissional–paciente com consentimento granular, revogável e auditável localmente.
 - Testes widget, análise estática, builds Web/Android e auditoria de dependências no GitHub Actions.
 
@@ -24,6 +25,12 @@ Decisões de requisitos, limites clínicos, métricas e referências: [docs/01-T
 - [Governança LGPD](docs/privacy-lgpd.md): classificação, minimização, consentimento e direitos do titular.
 - [Threat model e Zero Trust](docs/threat-model.md): ativos, STRIDE, fronteiras e controles futuros.
 - [Matriz de autorização](docs/authorization-matrix.md): papéis e acesso futuro por recurso.
+- [Protocolo de validação](docs/research-validation.md): síntese acadêmica e métricas sem alegação de eficácia.
+- [Protocolo operacional de estudo](docs/research-study-protocol.md): desenho, métricas e gates éticos.
+- [Plano de dados e análise](docs/research-data-analysis.md): variáveis, missingness e métricas pré-especificadas.
+- [Checklist ético e LGPD](docs/research-ethics-checklist.md): gates antes de qualquer coleta.
+- [Triagem e grafo bibliográfico](docs/literature-screening.md): formatos CSV, BibTeX, RIS e Mermaid em `references/`.
+- [Matriz de evidência](docs/evidence-matrix.md): avaliação crítica e rastreabilidade afirmação→fonte→decisão.
 
 ## Qualidade e entrega
 
