@@ -6,7 +6,7 @@ set -euo pipefail
 base_ref="${1:-}"
 [[ -n "$base_ref" ]] || base_ref="HEAD^"
 changed="$(git diff --name-only "$base_ref" HEAD)"
-if ! grep -Eq '(^|/)(supabase|backend)/|(^|/)lib/.*(sync|repository|remote)' <<<"$changed"; then
+if ! grep -Eiq '(^|/)(supabase|backend)/|(^|/)lib/.*\b(sync|synchronization|repository|remote)\b' <<<"$changed"; then
   echo "Governance gate: no backend/synchronization change detected."
   exit 0
 fi
