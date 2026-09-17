@@ -4,7 +4,9 @@ set -euo pipefail
 # The gate is intentionally inert for the local-only prototype. It activates
 # only when a change introduces backend or synchronization code.
 base_ref="${1:-}"
-[[ -n "$base_ref" ]] || base_ref="HEAD^"
+if [[ -z "$base_ref" || "$base_ref" =~ ^0+$ ]]; then
+  base_ref="HEAD^"
+fi
 changed="$(git diff --name-only "$base_ref" HEAD)"
 requires_governance=0
 while IFS= read -r path; do
