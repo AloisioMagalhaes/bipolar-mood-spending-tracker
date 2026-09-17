@@ -98,6 +98,19 @@ class MoodLedgerApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     title: 'MoodLedger',
     theme: MoodLedgerTheme.data(),
+    darkTheme: MoodLedgerTheme.dark(),
+    themeMode: ThemeMode.system,
+    builder: (context, child) {
+      final media = MediaQuery.of(context);
+      if (!media.highContrast) return child!;
+      final dark = media.platformBrightness == Brightness.dark;
+      return Theme(
+        data: dark
+            ? MoodLedgerTheme.dark(highContrast: true)
+            : MoodLedgerTheme.data(highContrast: true),
+        child: child!,
+      );
+    },
     home: const DashboardPage(),
   );
 }

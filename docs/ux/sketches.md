@@ -69,6 +69,20 @@ preserva a hierarquia visual, oferece as ações primárias e não infere valore
 ausentes. Após exclusão local, o aplicativo deve permanecer navegável e
 explicar que os dados não foram sincronizados remotamente.
 
+## Sketch 6 — carregamento e modos visuais
+
+```text
+┌─────────────────────────┐
+│       ◌                 │  ← “Carregando acompanhamento local”
+│  MoodLedger              │
+└─────────────────────────┘
+
+Sistema: claro ◐ escuro   Alto contraste: plataforma
+```
+
+O indicador é o estado planejado para uma próxima entrega; nesta entrega, a
+preferência segue o sistema e registros ausentes usam o Sketch 4 [F1–F4].
+
 ## Sketch 5 — timeline filtrável
 
 ```text
