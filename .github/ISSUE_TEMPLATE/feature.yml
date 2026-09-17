@@ -10,6 +10,13 @@ body:
     validations:
       required: true
   - type: textarea
+    id: repository-impact
+    attributes:
+      label: Impacto no repositório e rastreabilidade
+      description: Liste impacto em código, testes, Markdown, C4/UML, CI/CD, releases e deployments; justifique itens não aplicáveis.
+    validations:
+      required: true
+  - type: textarea
     id: acceptance
     attributes:
       label: Critérios de aceitação

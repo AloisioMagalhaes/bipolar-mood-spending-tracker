@@ -12,3 +12,25 @@ solicitar `--auto`; o GitHub efetiva o merge somente quando o PR estiver sem
 conflitos e todos os checks obrigatórios estiverem verdes. PRs de forks são
 excluídos da automação por segurança. Falhas, conflitos, revisão Sourcery
 acionável ou checks pendentes continuam bloqueando a promoção.
+
+## Rastreabilidade repository-wide
+
+Antes de criar uma issue, pesquisar o repositório inteiro e registrar impacto
+em código Dart/Flutter, testes, Markdown, diagramas Mermaid C4/UML 2.x, CI/CD,
+releases e deployments. Todo PR deve atualizar os artefatos afetados no mesmo
+changeset ou justificar por que não se aplicam. O PR deve ligar issue,
+critérios, Conventional Commit, checks, revisão Sourcery e evidências. A regra
+vale também para correções de workflow e mudanças exclusivamente documentais.
+
+## Code Scanning
+
+O workflow oficial do CodeQL executa a análise `security-and-quality` da
+workflows do GitHub Actions em pull requests, pushes de `main`/`develop` e
+semanalmente. Alertas devem ser tratados como P0 antes de qualquer promoção.
+Essa análise é complementar a `flutter analyze`, testes, OSV Scanner, Gitleaks
+e revisão do threat model; a análise é complementar e não representa cobertura
+completa do código Dart.
+
+As actions de CodeQL usam a linha suportada v4 e o checkout usa v5, reduzindo
+avisos de runtime Node.js e mantendo a manutenção alinhada ao ciclo oficial das
+actions.

@@ -45,10 +45,11 @@ conformidade jurídica; registra requisitos técnicos para revisão especializad
 
 ## Verificação
 
-Testes futuros devem comprovar: consentimento não é presumido; cada escopo pode
-ser revogado isoladamente; exportação exige ação explícita; exclusão remove o
-estado local; e a interface usa “autorrelato”, “tendência” e “padrão para
-revisão”. A implementação será feita em issue própria após esta especificação.
+Os testes de widget atuais comprovam: consentimento de exportação e vínculo não
+é presumido; exclusão remove registros e preserva estado navegável; e a
+interface usa “autorrelato”, “tendência” e “padrão para revisão”. Testes remotos
+de autorização e RLS continuam pendentes da implementação do backend e de suas
+aprovações formais.
 
 ## Referências (ABNT)
 
