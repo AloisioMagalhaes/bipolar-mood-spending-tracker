@@ -19,6 +19,16 @@ substituídos por ela.
 
 ## Promoção versionada
 
+### Incidente do governance-gate — releases v1.0.3 e v1.0.4
+
+Os runs `35166199286` e `35167513928` falharam antes dos builds porque a
+detecção de caminhos tratava a lista de arquivos modificados com regex frágil.
+O falso positivo foi corrigido em [PR #99](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/pull/99)
+e tornado determinístico em [PR #102](https://github.com/AloisioMagalhaes/bipolar-mood-spending-tracker/pull/102),
+com iteração por caminho e padrões explícitos. As tags afetadas são imutáveis;
+por isso a recuperação usa a versão `v1.0.5`. O gate continua bloqueando
+alterações reais de backend/sincronização sem evidência formal.
+
 Toda promoção de `develop` para `main` deve ser seguida por uma tag `vMAJOR.MINOR.PATCH` no mesmo commit de release. A tag dispara o build Web e Android e publica ambos como assets na GitHub Release. O Pages é disparado pelo push do mesmo commit em `main`, pois o ambiente protegido aceita a branch de produção; assim o conteúdo publicado é idêntico ao commit versionado. A promoção não é considerada concluída enquanto a release e o Pages não estiverem verdes.
 
 Prompt operacional: “Verifique issue, critérios, conflitos, Sourcery (`Issue`, `Triggers`, `Suggested fix`), testes, segurança e documentação; implemente em branch Gitflow, use Conventional Commits, abra PR, aguarde checks verdes, faça merge autorizado e somente então crie a tag SemVer. Em qualquer falha, pare a promoção, registre evidência e corrija antes de prosseguir.”
