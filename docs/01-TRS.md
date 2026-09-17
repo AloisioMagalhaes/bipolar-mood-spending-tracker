@@ -51,11 +51,18 @@ Falsos alertas, estigma, exposição financeira, coerção por terceiros, baixa 
 - RF-13: padrões são rotulados como autorrelato/tendência para revisão, nunca como fase bipolar.
 - RF-14: vínculo demonstrativo exige código e confirmação explícita; produção exige backend, expiração e auditoria server-side.
 - RF-15: quando não houver registros, exibir estado vazio orientativo com ações para registrar humor ou compra, sem acessar índice de lista inexistente.
+- RF-16: oferecer tema claro/escuro conforme sistema e variante de contraste elevado quando indicada pela plataforma.
 
 ## 7.1 Respostas científicas para os gates de segurança
 
 As respostas abaixo orientam requisitos de produto; não constituem aprovação
 jurídica, ética ou clínica.
+
+### Identidade visual e acessibilidade
+
+O MVP centraliza tokens de marca, usa Material 3, respeita o modo claro/escuro do
+sistema e reage ao sinal nativo de alto contraste. Isso não comprova WCAG AAA:
+a auditoria deve medir cada combinação de texto, foco, estado e zoom [F1,F4].
 
 ### Quem acessa cada dado?
 

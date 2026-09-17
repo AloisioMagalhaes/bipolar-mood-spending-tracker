@@ -2,8 +2,10 @@ classDiagram
 class MoodEntry {+int mood +int energy +int sleep +toJson()}
 class SpendingEntry {+DateTime date +double amount +String category +String motive +bool impulsive +toJson() +fromJson()}
 class MoodLedgerApp
+class MoodLedgerTheme {+brandSeed +data() +dark()}
 class DashboardPage
 MoodLedgerApp --> DashboardPage
+MoodLedgerApp --> MoodLedgerTheme
 DashboardPage --> MoodEntry
 DashboardPage --> SpendingEntry
 class ProfessionalLink {+String code +bool active}
